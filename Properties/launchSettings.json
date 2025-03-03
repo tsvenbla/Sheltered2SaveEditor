@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Sheltered2SaveEditor (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Sheltered2SaveEditor (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
