@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Sheltered2SaveEditor.Pages.DonatePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Sheltered2SaveEditor.Pages"
+    xmlns:vc="using:Sheltered2SaveEditor.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Uid="DonatePage">
+
+    <Page.Resources>
+        <vc:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+
+        <Style x:Key="DonationBorderStyle" TargetType="Border">
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"/>
+            <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
+            <Setter Property="Margin" Value="0,0,16,16"/>
+            <Setter Property="Width" Value="250"/>
+            <Setter Property="Height" Value="225"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="DonationImageStyle" TargetType="Image">
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+        <Style x:Key="DonationHyperlinkButtonStyle" TargetType="HyperlinkButton">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="DonationTextBoxStyle" TargetType="TextBox">
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        <DataTemplate x:Key="DonationItemTemplate" x:DataType="local:DonationItem">
+            <Border Style="{StaticResource DonationBorderStyle}">
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="{x:Bind ItemImagePath}"
+                           Style="{StaticResource DonationImageStyle}"
+                           AutomationProperties.Name="{x:Bind ItemImageAutomationName, Mode=OneWay}" />
+                    <HyperlinkButton Style="{StaticResource DonationHyperlinkButtonStyle}"
+                                     NavigateUri="{x:Bind ItemNavigateUri}"
+                                     Content="{x:Bind ItemButtonContent}"
+                                     AutomationProperties.Name="{x:Bind ItemButtonContent, Mode=OneWay}"
+                                     x:Uid="DonationItem_HyperlinkButton"/>
+                    <TextBox Style="{StaticResource DonationTextBoxStyle}"
+                             Text="{x:Bind ItemAddress}"
+                             Visibility="{x:Bind ItemAddress, Converter={StaticResource NullToVisibilityConverter}}"
+                             x:Uid="DonationItem_AddressTextBox"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </Page.Resources>
+
+    <StackPanel Orientation="Vertical" Margin="36,40,36,36">
+        <TextBlock Style="{StaticResource TitleTextBlockStyle}"
+                   Text="Donate"
+                   Margin="0,0,0,36" />
+        <TextBlock TextWrapping="Wrap"
+                   Text="Did you enjoy using this editor? If you did, please show your appreciation by donating!"
+                   Margin="0,0,36,20" />
+        <TextBlock TextWrapping="Wrap"
+                   Text="This project is open-source software. That means that anyone can access, modify, and improve it freely. However, developing and maintaining an application like this requires a lot of time and effort. This includes writing and reviewing code, fixing bugs, testing features, and updating documentation. If you find this software useful, your donation will support its ongoing improvement and growth."
+                   Margin="0,0,0,20" />
+        <TextBlock TextWrapping="Wrap"
+                   Text="Thank you! ☕"
+                   Margin="0,0,0,36" />
+
+        <ItemsControl ItemsSource="{x:Bind Donations, Mode=OneWay}" ItemTemplate="{StaticResource DonationItemTemplate}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VariableSizedWrapGrid Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </StackPanel>
+</Page>

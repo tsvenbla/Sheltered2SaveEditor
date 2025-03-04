@@ -1,36 +1,26 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Sheltered2SaveEditor.Helpers;
+using Sheltered2SaveEditor.Pages;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace Sheltered2SaveEditor
+namespace Sheltered2SaveEditor;
+public sealed partial class MainWindow : Window
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            this.InitializeComponent();
-        }
+    private readonly NavigationHelper _navigationHelper;
 
-        private void myButton_Click(object sender, RoutedEventArgs e)
-        {
-            myButton.Content = "Clicked";
-        }
+    public MainWindow()
+    {
+        InitializeComponent();
+        _navigationHelper = new(ContentFrame, NavigationViewControl);
+
+        // Set the initial page.
+        _navigationHelper.Navigate(typeof(HomePage));
+        NavigationViewControl.SelectedItem = HomePageView;
     }
+
+    private void OnNavigationViewSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        => _navigationHelper.OnNavigationViewSelectionChanged(sender, args);
+
+    public void EnableNavigationItems() =>
+        NavigationHelper.EnableNavigationItems(CharactersPageView, PetsPageView, InventoryPageView, CraftingPageView, FactionsPageView);
 }

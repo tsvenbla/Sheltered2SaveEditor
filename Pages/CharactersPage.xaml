@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Sheltered2SaveEditor.Pages.CharactersPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Sheltered2SaveEditor.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:Sheltered2SaveEditor.Helpers"
+    d:DataContext="{d:DesignInstance Type=helpers:Character}"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <Style x:Key="CharacterBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}"/>
+            <Setter Property="Padding" Value="16"/>
+        </Style>
+    </Page.Resources>
+    <StackPanel Margin="36" Spacing="24">
+        <!-- Title with extra bottom margin to achieve a 48epx gap when combined with the parent's spacing -->
+        <TextBlock Text="Characters" 
+                   Style="{StaticResource TitleTextBlockStyle}" 
+                   Margin="0,0,0,24"/>
+        <ComboBox x:Name="CharacterComboBox"
+                  Header="Select a character from the drop-down menu and edit the relevant fields."
+                  PlaceholderText="Select a character"
+                  SelectionChanged="CharacterComboBox_SelectionChanged"
+                  DisplayMemberPath="FullName"/>
+        <Border Style="{StaticResource CharacterBorderStyle}">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Basics"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBox x:Name="FirstNameTextBox"
+                         Width="250"
+                         HorizontalAlignment="Left"
+                         Header="First name:"
+                         PlaceholderText="Jane"
+                         MaxLength="15"
+                         Text="{Binding FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox x:Name="LastNameTextBox"
+                         Width="250"
+                         HorizontalAlignment="Left"
+                         Header="Last name:"
+                         PlaceholderText="Doe"
+                         MaxLength="15"
+                         Text="{Binding LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <CheckBox Content="Interacting"
+                          IsChecked="{Binding Interacting, Mode=TwoWay}"/>
+                <CheckBox Content="Interacting with object"
+                          IsChecked="{Binding InteractingWithObj, Mode=TwoWay}"/>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource CharacterBorderStyle}">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Health and Conditions"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <NumberBox x:Name="CurrentHealthNumberBox"
+                           Width="250"
+                           HorizontalAlignment="Left"
+                           Header="Current health:"
+                           Value="{Binding CurrentHealth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           Minimum="1"
+                           Maximum="10000"
+                           SpinButtonPlacementMode="Inline"
+                           SmallChange="10"
+                           LargeChange="100"/>
+                <NumberBox x:Name="MaxHealthNumberBox"
+                           Width="250"
+                           HorizontalAlignment="Left"
+                           Header="Maximum health:"
+                           Value="{Binding MaxHealth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           Minimum="1"
+                           Maximum="10000"
+                           SpinButtonPlacementMode="Inline"
+                           SmallChange="10"
+                           LargeChange="100"/>
+                <CheckBox Content="Has been defibrillated"
+                          IsChecked="{Binding HasBeenDefibbed, Mode=TwoWay}"/>
+                <CheckBox Content="Is passed out"
+                          IsChecked="{Binding PassedOut, Mode=TwoWay}"/>
+                <CheckBox Content="Is unconscious"
+                          IsChecked="{Binding IsUnconscious, Mode=TwoWay}"/>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource CharacterBorderStyle}">
+            <StackPanel Orientation="Vertical" Spacing="12">
+                <TextBlock Text="Stats"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock TextWrapping="Wrap"
+                           Margin="0,0,0,12"
+                           Text="Each stat has a current and maximum level, referred to as the 'cap.' The current level determines the cap and cannot be directly modified to maintain game logic. For levels 1 to 5, the cap increases by 2 points for each level. Once a level exceeds 5, the cap is always 20." />
+                <Button x:Name="MaxStatsButton" Click="MaxStatsButton_Click" IsEnabled="False" Content="Maximise all stats">
+                    <Button.Flyout>
+                        <Flyout Placement="Right">
+                            <TextBlock x:Name="MaxStatsButton_Flyout" Text=""/>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Grid RowSpacing="12" ColumnSpacing="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Row 1: Level -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="Current level:"
+                               VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                    <NumberBox Grid.Row="0" Grid.Column="1"
+                               Header="&#128170; Strength"
+                               Value="{Binding Strength.Level, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="2"
+                               Header="&#127939; Dexterity"
+                               Value="{Binding Dexterity.Level, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               Minimum="0"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="3"
+                               Header="&#129504; Intelligence"
+                               Value="{Binding Intelligence.Level, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="4"
+                               Header="&#128068; Charisma"
+                               Value="{Binding Charisma.Level, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="5"
+                               Header="&#128064; Perception"
+                               Value="{Binding Perception.Level, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="6"
+                               Header="&#10084; Fortitude"
+                               Value="{Binding Fortitude.Level, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+
+                    <!-- Row 2: Cap -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Text="Maximum level:" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="1"
+                               Value="{Binding Strength.Cap}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="2"
+                               Value="{Binding Dexterity.Cap}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="3"
+                               Value="{Binding Intelligence.Cap}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="4"
+                               Value="{Binding Charisma.Cap}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="5"
+                               Value="{Binding Perception.Cap}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="6"
+                               Value="{Binding Fortitude.Cap}"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource CharacterBorderStyle}">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Skills"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <!-- Click="MaxSkillsButton_Click" -->
+                <Button x:Name="MaxSkillsButton" IsEnabled="False" Content="Maximise all skills">
+                    <Button.Flyout>
+                        <Flyout Placement="Right">
+                            <TextBlock x:Name="MaxSkillsButton_Flyout" Text=""/>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+                <!--
+                <SelectorBar x:Name="SelectorBar"
+                             SelectionChanged="SelectorBar_SelectionChanged">
+                    <SelectorBarItem x:Name="SelectorBarItemStrength" 
+                     Text="&#128170; Strength" IsSelected="True"/>
+                    <SelectorBarItem x:Name="SelectorBarItemDexterity" 
+                     Text="&#127939; Dexterity"/>
+                    <SelectorBarItem x:Name="SelectorBarItemIntelligence" 
+                     Text="&#129504; Intelligence"/>
+                    <SelectorBarItem x:Name="SelectorBarItemCharisma" 
+                     Text="&#128068; Charisma"/>
+                    <SelectorBarItem x:Name="SelectorBarItemPerception" 
+                     Text="&#128064; Perception"/>
+                    <SelectorBarItem x:Name="SelectorBarItemFortitude" 
+                     Text="&#10084; Fortitude"/>
+                </SelectorBar>
+                <Frame x:Name="SkillsContentFrame" IsNavigationStackEnabled="False" />-->
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</Page>
