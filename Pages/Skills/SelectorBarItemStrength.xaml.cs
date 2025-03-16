@@ -1,21 +1,18 @@
 using Microsoft.UI.Xaml.Controls;
-using Sheltered2SaveEditor.Helpers;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using Sheltered2SaveEditor.ViewModels;
 
 namespace Sheltered2SaveEditor.Pages.Skills;
 
-/// <summary>
-/// An empty page that can be used on its own or navigated to within a Frame.
-/// </summary>
 public sealed partial class SelectorBarItemStrength : Page
 {
+    public StrengthSkillsViewModel ViewModel { get; } = new StrengthSkillsViewModel();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SelectorBarItemStrength"/> class.
+    /// </summary>
     public SelectorBarItemStrength()
     {
         InitializeComponent();
-
-        // Assuming you have access to the selected character
-        DataContext = AppDataHelper.SelectedCharacter;
+        DataContext = ViewModel;
     }
 }

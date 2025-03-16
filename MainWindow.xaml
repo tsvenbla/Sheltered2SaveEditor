@@ -2,9 +2,8 @@
 <Window
     x:Class="Sheltered2SaveEditor.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Sheltered2SaveEditor"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="Sheltered 2 - Save Editor">
@@ -26,7 +25,10 @@
                            Text="Sheltered 2 - Save Editor" />
             </StackPanel>
         </Border>
-        <NavigationView x:Name="NavigationViewControl" Grid.Row="1" SelectionChanged="OnNavigationViewSelectionChanged">
+        <NavigationView x:Name="NavigationViewControl" Grid.Row="1" 
+                         SelectionChanged="OnNavigationViewSelectionChanged" 
+                         BackRequested="OnNavigationViewBackRequested"
+                         IsBackEnabled="False">
             <NavigationView.Resources>
                 <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
                 <Thickness x:Key="NavigationViewMinimalContentMargin">0,48,0,0</Thickness>
@@ -34,7 +36,7 @@
                 <CornerRadius x:Key="NavigationViewContentGridCornerRadius">8,0,0,0</CornerRadius>
             </NavigationView.Resources>
             <ScrollView>
-                <Frame x:Name="ContentFrame">
+                <Frame x:Name="ContentFrameControl">
                     <Frame.ContentTransitions>
                         <TransitionCollection>
                             <NavigationThemeTransition/>
@@ -43,16 +45,42 @@
                 </Frame>
             </ScrollView>
             <NavigationView.MenuItems>
-                <NavigationViewItem x:Name="HomePageView" Content="Home" Tag="Home" Icon="Home" />
+                <NavigationViewItem x:Name="HomePageView" 
+                                    Content="Home" 
+                                    Tag="Home" 
+                                    Icon="Home" 
+                                    IsEnabled="{Binding IsHomeEnabled}" />
                 <NavigationViewItemSeparator />
-                <NavigationViewItem x:Name="CharactersPageView" Content="Characters" Tag="Characters" Icon="People" IsEnabled="False" />
-                <NavigationViewItem x:Name="PetsPageView" Content="Pets" Tag="Pets" Icon="Emoji" IsEnabled="False" />
-                <NavigationViewItem x:Name="InventoryPageView" Content="Inventory" Tag="Inventory" Icon="Shop" IsEnabled="False" />
-                <NavigationViewItem x:Name="CraftingPageView" Content="Crafting" Tag="Crafting" Icon="Repair" IsEnabled="False" />
-                <NavigationViewItem x:Name="FactionsPageView" Content="Factions" Tag="Factions" Icon="Flag" IsEnabled="False" />
+                <NavigationViewItem x:Name="CharactersPageView" 
+                                    Content="Characters" 
+                                    Tag="Characters" 
+                                    Icon="People" 
+                                    IsEnabled="{Binding IsCharactersEnabled}" />
+                <NavigationViewItem x:Name="PetsPageView" 
+                                    Content="Pets" 
+                                    Tag="Pets" 
+                                    Icon="Emoji" 
+                                    IsEnabled="{Binding IsPetsEnabled}" />
+                <NavigationViewItem x:Name="InventoryPageView" 
+                                    Content="Inventory" 
+                                    Tag="Inventory" 
+                                    Icon="Shop" 
+                                    IsEnabled="{Binding IsInventoryEnabled}" />
+                <NavigationViewItem x:Name="CraftingPageView" 
+                                    Content="Crafting" 
+                                    Tag="Crafting" 
+                                    Icon="Repair" 
+                                    IsEnabled="{Binding IsCraftingEnabled}" />
+                <NavigationViewItem x:Name="FactionsPageView" 
+                                    Content="Factions" 
+                                    Tag="Factions" 
+                                    Icon="Flag" 
+                                    IsEnabled="{Binding IsFactionsEnabled}" />
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Name="DonatePageView" Content="Donate" Tag="Donate">
+                <NavigationViewItem x:Name="DonatePageView" 
+                                    Content="Donate" 
+                                    Tag="Donate">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEB52;" />
                     </NavigationViewItem.Icon>
