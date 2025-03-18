@@ -6,6 +6,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    x:Name="AppMainWindow"
+    x:Uid="AppMainWindow"
     Title="Sheltered 2 - Save Editor">
 
     <Window.SystemBackdrop>
@@ -13,30 +15,62 @@
     </Window.SystemBackdrop>
 
     <Grid>
+        <Grid.Resources>
+            <!-- Navigation view styling -->
+            <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
+            <Thickness x:Key="NavigationViewMinimalContentMargin">0,48,0,0</Thickness>
+            <Thickness x:Key="NavigationViewContentGridBorderThickness">1,1,0,0</Thickness>
+            <CornerRadius x:Key="NavigationViewContentGridCornerRadius">8,0,0,0</CornerRadius>
+
+            <!-- App bar styling -->
+            <Style x:Key="AppTitleBarStyle" TargetType="StackPanel">
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="48,0,0,0" />
+            </Style>
+        </Grid.Resources>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Height="48" Margin="48,0,0,0">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Image Width="18" VerticalAlignment="Center" Source="ms-appx:///Assets/AppIcon.ico" />
-                <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
+
+        <!-- Custom title bar -->
+        <Border Grid.Row="0" Height="48">
+            <StackPanel Style="{StaticResource AppTitleBarStyle}">
+                <Image Width="18" 
+                       VerticalAlignment="Center" 
+                       Source="{ThemeResource AppIconPath}"
+                       AutomationProperties.Name="Sheltered 2 Icon"
+                       x:Uid="TitleBarIcon"/>
+                <TextBlock Margin="12,0,0,0" 
+                           VerticalAlignment="Center"
                            Style="{StaticResource CaptionTextBlockStyle}"
-                           Text="Sheltered 2 - Save Editor" />
+                           Text="Sheltered 2 - Save Editor" 
+                           x:Uid="TitleBarText"/>
             </StackPanel>
         </Border>
-        <NavigationView x:Name="NavigationViewControl" Grid.Row="1" 
-                         SelectionChanged="OnNavigationViewSelectionChanged" 
-                         BackRequested="OnNavigationViewBackRequested"
-                         IsBackEnabled="False">
+
+        <!-- Main navigation view -->
+        <NavigationView x:Name="NavigationViewControl" 
+                       Grid.Row="1" 
+                       SelectionChanged="OnNavigationViewSelectionChanged" 
+                       BackRequested="OnNavigationViewBackRequested"
+                       IsBackEnabled="{x:Bind ViewModel.IsNavigateBackEnabled, Mode=OneWay}"
+                       PaneDisplayMode="Auto"
+                       x:Uid="MainNavigationView">
+
             <NavigationView.Resources>
                 <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
                 <Thickness x:Key="NavigationViewMinimalContentMargin">0,48,0,0</Thickness>
                 <Thickness x:Key="NavigationViewContentGridBorderThickness">1,1,0,0</Thickness>
                 <CornerRadius x:Key="NavigationViewContentGridCornerRadius">8,0,0,0</CornerRadius>
             </NavigationView.Resources>
+
             <ScrollView>
-                <Frame x:Name="ContentFrameControl">
+                <Frame x:Name="ContentFrameControl" 
+                       NavigationFailed="OnContentFrameNavigationFailed"
+                       IsTabStop="False">
                     <Frame.ContentTransitions>
                         <TransitionCollection>
                             <NavigationThemeTransition/>
@@ -44,43 +78,68 @@
                     </Frame.ContentTransitions>
                 </Frame>
             </ScrollView>
+
+            <!-- Main navigation menu items -->
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Name="HomePageView" 
-                                    Content="Home" 
-                                    Tag="Home" 
-                                    Icon="Home" 
-                                    IsEnabled="{Binding IsHomeEnabled}" />
+                                  Content="Home" 
+                                  Tag="Home" 
+                                  Icon="Home" 
+                                  IsEnabled="{x:Bind ViewModel.IsHomeEnabled, Mode=OneWay}"
+                                  AutomationProperties.Name="Home page"
+                                  AutomationProperties.AutomationId="HomePageNavButton"
+                                  x:Uid="HomeNavItem" />
                 <NavigationViewItemSeparator />
                 <NavigationViewItem x:Name="CharactersPageView" 
-                                    Content="Characters" 
-                                    Tag="Characters" 
-                                    Icon="People" 
-                                    IsEnabled="{Binding IsCharactersEnabled}" />
+                                  Content="Characters" 
+                                  Tag="Characters" 
+                                  Icon="People" 
+                                  IsEnabled="{x:Bind ViewModel.IsCharactersEnabled, Mode=OneWay}"
+                                  AutomationProperties.Name="Characters page"
+                                  AutomationProperties.AutomationId="CharactersPageNavButton"
+                                  x:Uid="CharactersNavItem" />
                 <NavigationViewItem x:Name="PetsPageView" 
-                                    Content="Pets" 
-                                    Tag="Pets" 
-                                    Icon="Emoji" 
-                                    IsEnabled="{Binding IsPetsEnabled}" />
+                                  Content="Pets" 
+                                  Tag="Pets" 
+                                  Icon="Emoji" 
+                                  IsEnabled="{x:Bind ViewModel.IsPetsEnabled, Mode=OneWay}"
+                                  AutomationProperties.Name="Pets page"
+                                  AutomationProperties.AutomationId="PetsPageNavButton"
+                                  x:Uid="PetsNavItem" />
                 <NavigationViewItem x:Name="InventoryPageView" 
-                                    Content="Inventory" 
-                                    Tag="Inventory" 
-                                    Icon="Shop" 
-                                    IsEnabled="{Binding IsInventoryEnabled}" />
+                                  Content="Inventory" 
+                                  Tag="Inventory" 
+                                  Icon="Shop" 
+                                  IsEnabled="{x:Bind ViewModel.IsInventoryEnabled, Mode=OneWay}"
+                                  AutomationProperties.Name="Inventory page"
+                                  AutomationProperties.AutomationId="InventoryPageNavButton"
+                                  x:Uid="InventoryNavItem" />
                 <NavigationViewItem x:Name="CraftingPageView" 
-                                    Content="Crafting" 
-                                    Tag="Crafting" 
-                                    Icon="Repair" 
-                                    IsEnabled="{Binding IsCraftingEnabled}" />
+                                  Content="Crafting" 
+                                  Tag="Crafting" 
+                                  Icon="Repair" 
+                                  IsEnabled="{x:Bind ViewModel.IsCraftingEnabled, Mode=OneWay}"
+                                  AutomationProperties.Name="Crafting page" 
+                                  AutomationProperties.AutomationId="CraftingPageNavButton"
+                                  x:Uid="CraftingNavItem" />
                 <NavigationViewItem x:Name="FactionsPageView" 
-                                    Content="Factions" 
-                                    Tag="Factions" 
-                                    Icon="Flag" 
-                                    IsEnabled="{Binding IsFactionsEnabled}" />
+                                  Content="Factions" 
+                                  Tag="Factions" 
+                                  Icon="Flag" 
+                                  IsEnabled="{x:Bind ViewModel.IsFactionsEnabled, Mode=OneWay}"
+                                  AutomationProperties.Name="Factions page"
+                                  AutomationProperties.AutomationId="FactionsPageNavButton"
+                                  x:Uid="FactionsNavItem" />
             </NavigationView.MenuItems>
+
+            <!-- Footer navigation items -->
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem x:Name="DonatePageView" 
-                                    Content="Donate" 
-                                    Tag="Donate">
+                                  Content="Donate" 
+                                  Tag="Donate"
+                                  AutomationProperties.Name="Donate page"
+                                  AutomationProperties.AutomationId="DonatePageNavButton"
+                                  x:Uid="DonateNavItem">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEB52;" />
                     </NavigationViewItem.Icon>

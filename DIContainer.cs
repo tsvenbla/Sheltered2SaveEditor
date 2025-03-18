@@ -4,6 +4,7 @@ using Sheltered2SaveEditor.Helpers;
 using Sheltered2SaveEditor.Navigation;
 using Sheltered2SaveEditor.Services;
 using Sheltered2SaveEditor.ViewModels;
+using System;
 
 namespace Sheltered2SaveEditor;
 
@@ -12,10 +13,12 @@ namespace Sheltered2SaveEditor;
 /// </summary>
 public static class DIContainer
 {
+    private static readonly Lazy<ServiceProvider> _serviceProviderLazy = new(ConfigureServices);
+
     /// <summary>
     /// Gets the service provider with all registered services.
     /// </summary>
-    public static ServiceProvider Services { get; } = ConfigureServices();
+    public static ServiceProvider Services => _serviceProviderLazy.Value;
 
     /// <summary>
     /// Configures and builds the service collection.
@@ -26,33 +29,68 @@ public static class DIContainer
         ServiceCollection services = new();
 
         // Register logging providers
-        _ = services.AddLogging(static configure =>
-        {
-            // Use Debug and Console for development
-            _ = configure.AddDebug();
-            _ = configure.AddConsole();
-        });
+        RegisterLogging(services);
+
+        // Register core services
+        RegisterCoreServices(services);
 
         // Register navigation services
-        _ = services.AddSingleton<PageNavigationRegistry>();
-        _ = services.AddSingleton<FrameProvider>();
-        _ = services.AddSingleton<INavigationService>(provider =>
-        {
-            FrameProvider frameProvider = provider.GetRequiredService<FrameProvider>();
-            return new NavigationService(frameProvider);
-        });
+        RegisterNavigationServices(services);
 
         // Register view models
-        _ = services.AddSingleton<MainWindowViewModel>();
-        _ = services.AddSingleton<CharactersViewModel>();
-        _ = services.AddSingleton<HomePageViewModel>();
-        // Register other view models as needed
-
-        // Register services
-        _ = services.AddSingleton<IFilePickerService, FilePickerService>();
-        _ = services.AddSingleton<IXorCipherService, XorCipherService>();
-        _ = services.AddSingleton<FileValidator>();
+        RegisterViewModels(services);
 
         return services.BuildServiceProvider();
+    }
+
+    private static void RegisterLogging(ServiceCollection services) => _ = services.AddLogging(static configure =>
+                                                                            {
+                                                                                // Use Debug and Console for development
+                                                                                _ = configure.AddDebug();
+                                                                                _ = configure.AddConsole();
+                                                                                // Set minimum log level
+                                                                                _ = configure.SetMinimumLevel(LogLevel.Information);
+                                                                            });
+
+    private static void RegisterCoreServices(ServiceCollection services)
+    {
+        // Register file services
+        _ = services.AddSingleton<IFilePickerService, FilePickerService>();
+        _ = services.AddSingleton<IXorCipherService, XorCipherService>();
+        _ = services.AddSingleton<IFileService, FileService>();
+        _ = services.AddSingleton<FileValidator>();
+
+        // Register dialog service
+        _ = services.AddSingleton<IDialogService, DialogService>();
+    }
+
+    private static void RegisterNavigationServices(ServiceCollection services)
+    {
+        // Register navigation registry and helpers
+        _ = services.AddSingleton<IPageNavigationRegistry>(provider =>
+        {
+            ILogger<PageNavigationRegistry> logger = provider.GetRequiredService<ILogger<PageNavigationRegistry>>();
+            return new PageNavigationRegistry(logger)
+                .RegisterDefaultPages()  // Register the standard pages
+                .Build();               // Build the registry to make it immutable
+        });
+
+        _ = services.AddSingleton<FrameProvider>();
+
+        // Register navigation service
+        _ = services.AddSingleton<INavigationService, NavigationService>();
+    }
+
+    private static void RegisterViewModels(ServiceCollection services)
+    {
+        // Register main window view model
+        _ = services.AddSingleton<MainWindowViewModel>();
+
+        // Register page view models
+        _ = services.AddSingleton<HomePageViewModel>();
+        _ = services.AddSingleton<CharactersViewModel>();
+
+        // Register skill view models
+        _ = services.AddTransient<StrengthSkillsViewModel>();
     }
 }

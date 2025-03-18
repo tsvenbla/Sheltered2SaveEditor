@@ -348,6 +348,7 @@
     <RepositoryUrl>https://github.com/tsvenbla/Sheltered2SaveEditor</RepositoryUrl>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <Title>Sheltered 2 - Game Save Editor</Title>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <WarningLevel>8</WarningLevel>
