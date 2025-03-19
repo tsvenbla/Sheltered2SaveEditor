@@ -128,17 +128,17 @@ public sealed record FileValidationOptions
 /// <summary>
 /// Represents the result of a file validation operation with detailed information.
 /// </summary>
-/// <param name="result">The validation result.</param>
-/// <param name="message">A detailed message describing the result.</param>
-/// <param name="exception">The exception that occurred, if any.</param>
-/// <param name="elapsedMilliseconds">The time taken for validation.</param>
-/// <param name="fileInfo">Information about the validated file.</param>
+/// <param name="Result">The validation result.</param>
+/// <param name="Message">A detailed message describing the result.</param>
+/// <param name="Exception">The exception that occurred, if any.</param>
+/// <param name="ElapsedMilliseconds">The time taken for validation.</param>
+/// <param name="FileInfo">Information about the validated file.</param>
 public sealed record ValidationResultInfo(
-    ValidationResult result,
-    string message,
-    Exception? exception = null,
-    long elapsedMilliseconds = 0,
-    FileInfo? fileInfo = null)
+    ValidationResult Result,
+    string Message,
+    Exception? Exception = null,
+    long ElapsedMilliseconds = 0,
+    FileInfo? FileInfo = null)
 {
     /// <summary>
     /// Creates a successful validation result.
@@ -379,15 +379,15 @@ public sealed class FileValidator
             // If we're bypassing validation failures and we have an invalid format or structure,
             // return ValidWithWarnings instead of the actual error
             if (_options.BypassValidationFailures &&
-                (result.result == ValidationResult.InvalidFormat ||
-                 result.result == ValidationResult.InvalidStructure ||
-                 result.result == ValidationResult.DecryptionError))
+                (result.Result == ValidationResult.InvalidFormat ||
+                 result.Result == ValidationResult.InvalidStructure ||
+                 result.Result == ValidationResult.DecryptionError))
             {
-                _logger?.LogWarning("Bypassing validation failure: {Result} - {Message}", result.result, result.message);
+                _logger?.LogWarning("Bypassing validation failure: {Result} - {Message}", result.Result, result.Message);
                 return ValidationResult.ValidWithWarnings;
             }
 
-            return result.result;
+            return result.Result;
         }
         catch (Exception ex)
         {
@@ -502,9 +502,9 @@ public sealed class FileValidator
                 ValidationResultInfo result = await ValidateSmallFileWithDetailsAsync(stream, progressMonitor, combinedToken);
                 stopwatch.Stop();
                 result = new ValidationResultInfo(
-                    result.result,
-                    result.message,
-                    result.exception,
+                    result.Result,
+                    result.Message,
+                    result.Exception,
                     stopwatch.ElapsedMilliseconds,
                     fileInfo);
                 await progressMonitor.CompleteValidationAsync(result, combinedToken);
@@ -516,9 +516,9 @@ public sealed class FileValidator
             ValidationResultInfo largeFileResult = await ValidateLargeFileWithDetailsAsync(stream, progressMonitor, combinedToken);
             stopwatch.Stop();
             largeFileResult = new ValidationResultInfo(
-                largeFileResult.result,
-                largeFileResult.message,
-                largeFileResult.exception,
+                largeFileResult.Result,
+                largeFileResult.Message,
+                largeFileResult.Exception,
                 stopwatch.ElapsedMilliseconds,
                 fileInfo);
             await progressMonitor.CompleteValidationAsync(largeFileResult, combinedToken);
