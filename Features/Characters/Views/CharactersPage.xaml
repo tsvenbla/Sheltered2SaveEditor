@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Sheltered2SaveEditor.Features.Characters.Views.CharactersPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Sheltered2SaveEditor.Features.Characters.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:CharactersViewModel}"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled">
+
+    <Page.Resources>
+        <Style x:Key="CharacterBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}"/>
+            <Setter Property="Padding" Value="16"/>
+        </Style>
+    </Page.Resources>
+
+    <StackPanel Margin="36" Spacing="24">
+        <!-- Title -->
+        <TextBlock Text="Characters" 
+                   Style="{StaticResource TitleTextBlockStyle}" 
+                   Margin="0,0,0,24"/>
+
+        <!-- ComboBox for selecting a character -->
+        <ComboBox x:Name="CharacterComboBox"
+                  Header="Select a character from the drop-down menu and edit the relevant fields."
+                  PlaceholderText="Select a character"
+                  ItemsSource="{x:Bind ViewModel.Characters, Mode=OneWay}"
+                  SelectedItem="{x:Bind ViewModel.SelectedCharacter, Mode=TwoWay}"
+                  DisplayMemberPath="FullName"/>
+
+        <!-- Basics Section -->
+        <Border Style="{StaticResource CharacterBorderStyle}">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Basics"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBox x:Name="FirstNameTextBox"
+                         Width="250"
+                         HorizontalAlignment="Left"
+                         Header="First name:"
+                         PlaceholderText="Jane"
+                         MaxLength="15"
+                         IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                         Text="{x:Bind ViewModel.SelectedCharacter.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox x:Name="LastNameTextBox"
+                         Width="250"
+                         HorizontalAlignment="Left"
+                         Header="Last name:"
+                         PlaceholderText="Doe"
+                         MaxLength="15"
+                         IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                         Text="{x:Bind ViewModel.SelectedCharacter.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <CheckBox Content="Interacting"
+                          IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                          IsChecked="{x:Bind ViewModel.SelectedCharacter.Interacting, Mode=TwoWay}"/>
+                <CheckBox Content="Interacting with object"
+                          IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                          IsChecked="{x:Bind ViewModel.SelectedCharacter.InteractingWithObj, Mode=TwoWay}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Health and Conditions Section -->
+        <Border Style="{StaticResource CharacterBorderStyle}">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Health and Conditions"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <NumberBox x:Name="CurrentHealthNumberBox"
+                           Width="250"
+                           HorizontalAlignment="Left"
+                           Header="Current health:"
+                           IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                           Value="{x:Bind ViewModel.SelectedCharacter.CurrentHealth, Mode=TwoWay}"
+                           Minimum="1"
+                           Maximum="10000"
+                           SpinButtonPlacementMode="Inline"
+                           SmallChange="10"
+                           LargeChange="100"/>
+                <NumberBox x:Name="MaxHealthNumberBox"
+                           Width="250"
+                           HorizontalAlignment="Left"
+                           Header="Maximum health:"
+                           IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                           Value="{x:Bind ViewModel.SelectedCharacter.MaxHealth, Mode=TwoWay}"
+                           Minimum="1"
+                           Maximum="10000"
+                           SpinButtonPlacementMode="Inline"
+                           SmallChange="10"
+                           LargeChange="100"/>
+                <CheckBox Content="Has been defibrillated"
+                          IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                          IsChecked="{x:Bind ViewModel.SelectedCharacter.HasBeenDefibbed, Mode=TwoWay}"/>
+                <CheckBox Content="Is passed out"
+                          IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                          IsChecked="{x:Bind ViewModel.SelectedCharacter.PassedOut, Mode=TwoWay}"/>
+                <CheckBox Content="Is unconscious"
+                          IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                          IsChecked="{x:Bind ViewModel.SelectedCharacter.IsUnconscious, Mode=TwoWay}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Stats Section -->
+        <Border Style="{StaticResource CharacterBorderStyle}">
+            <StackPanel Orientation="Vertical" Spacing="12">
+                <TextBlock Text="Stats"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock TextWrapping="Wrap"
+                           Margin="0,0,0,12"
+                           Text="Each stat has a current and maximum level, referred to as the 'cap.' The current level determines the cap and cannot be directly modified to maintain game logic. For levels 1 to 5, the cap increases by 2 points for each level. Once a level exceeds 5, the cap is always 20." />
+                <!-- Maximize Stats Button uses command binding -->
+                <Button x:Name="MaxStatsButton" 
+                        IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.MaximizeStatsCommand}"
+                        Content="Maximise all stats" />
+                <!-- Feedback message -->
+                <TextBlock Text="{x:Bind ViewModel.Feedback, Mode=OneWay}" Margin="0,4,0,0" Foreground="Gray"/>
+                <Grid RowSpacing="12" ColumnSpacing="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Row 1: Levels -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="Current level:"
+                               VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                    <NumberBox Grid.Row="0" Grid.Column="1"
+                               Header="&#128170; Strength"
+                               IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Strength.Level, Mode=TwoWay}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="2"
+                               Header="&#127939; Dexterity"
+                               IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Dexterity.Level, Mode=TwoWay}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="3"
+                               Header="&#129504; Intelligence"
+                               IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Intelligence.Level, Mode=TwoWay}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="4"
+                               Header="&#128068; Charisma"
+                               IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Charisma.Level, Mode=TwoWay}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="5"
+                               Header="&#128064; Perception"
+                               IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Perception.Level, Mode=TwoWay}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+                    <NumberBox Grid.Row="0" Grid.Column="6"
+                               Header="&#10084; Fortitude"
+                               IsEnabled="{x:Bind ViewModel.IsCharacterSelected, Mode=OneWay}"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Fortitude.Level, Mode=TwoWay}"
+                               Minimum="1"
+                               Maximum="20"
+                               SpinButtonPlacementMode="Compact"
+                               SmallChange="1"/>
+
+                    <!-- Row 2: Caps -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Text="Maximum level:" 
+                               VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="1"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Strength.Cap, Mode=OneWay}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="2"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Dexterity.Cap, Mode=OneWay}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="3"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Intelligence.Cap, Mode=OneWay}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="4"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Charisma.Cap, Mode=OneWay}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="5"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Perception.Cap, Mode=OneWay}"/>
+                    <NumberBox IsEnabled="False" Grid.Row="1" Grid.Column="6"
+                               Value="{x:Bind ViewModel.SelectedCharacter.Fortitude.Cap, Mode=OneWay}"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource CharacterBorderStyle}">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Skills"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <SelectorBar x:Name="SelectorBar">
+                    <!--                    SelectionChanged="SelectorBar_SelectionChanged"-->
+                    <SelectorBarItem x:Name="SelectorBarItemStrength" 
+                     Text="&#128170; Strength" IsSelected="True"/>
+                    <SelectorBarItem x:Name="SelectorBarItemDexterity" 
+                     Text="&#127939; Dexterity"/>
+                    <SelectorBarItem x:Name="SelectorBarItemIntelligence" 
+                     Text="&#129504; Intelligence"/>
+                    <SelectorBarItem x:Name="SelectorBarItemCharisma" 
+                     Text="&#128068; Charisma"/>
+                    <SelectorBarItem x:Name="SelectorBarItemPerception" 
+                     Text="&#128064; Perception"/>
+                    <SelectorBarItem x:Name="SelectorBarItemFortitude" 
+                     Text="&#10084; Fortitude"/>
+                </SelectorBar>
+                <Frame x:Name="SkillsContentFrame" IsNavigationStackEnabled="False" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</Page>

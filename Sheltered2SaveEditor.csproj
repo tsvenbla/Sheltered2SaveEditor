@@ -327,6 +327,25 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Interfaces\" />
+    <Folder Include="Features\Characters\Models\" />
+    <Folder Include="Features\Crafting\Views\" />
+    <Folder Include="Features\Donate\Views\" />
+    <Folder Include="Features\Donate\ViewModels\" />
+    <Folder Include="Features\Factions\Models\" />
+    <Folder Include="Features\Factions\Views\" />
+    <Folder Include="Features\Factions\ViewModels\" />
+    <Folder Include="Features\Inventory\Views\" />
+    <Folder Include="Features\Inventory\ViewModels\" />
+    <Folder Include="Features\Pets\Models\" />
+    <Folder Include="Features\Pets\Views\" />
+    <Folder Include="Features\Pets\ViewModels\" />
+    <Folder Include="Features\SaveFiles\Views\" />
+    <Folder Include="Features\Skills\Models\" />
+    <Folder Include="Features\Skills\Views\" />
+    <Folder Include="Utils\Extensions\" />
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution

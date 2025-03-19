@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
-using Sheltered2SaveEditor.Services;
+using Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
 using System;
 using System.Threading.Tasks;
 

@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Helpers;
-using Sheltered2SaveEditor.Navigation;
-using Sheltered2SaveEditor.Services;
+using Sheltered2SaveEditor.Core;
+using Sheltered2SaveEditor.Core.Constants;
+using Sheltered2SaveEditor.Infrastructure.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +17,7 @@ public partial class MainWindowViewModel : ObservableObject
 {
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly INavigationService _navigationService;
-    private readonly PageNavigationRegistry _pageRegistry;
+    private readonly IPageNavigationRegistry _pageRegistry;
 
     // Fields for navigation item enabled states
     private bool _isHomeEnabled = true;
@@ -94,10 +94,6 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets a dictionary of navigation tags for use in the UI.
     /// </summary>
-    /// <remarks>
-    /// This provides a way to access navigation constants in XAML without using x:Static,
-    /// which is not supported in WinUI 3.
-    /// </remarks>
     public ReadOnlyDictionary<string, string> NavigationTags { get; }
 
     /// <summary>
@@ -112,7 +108,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             _logger.LogInformation("Navigating to page: {PageKey}", pageKey);
             Type pageType = _pageRegistry.GetPageTypeByKey(pageKey);
-            _navigationService.Navigate(pageType);
+            _ = _navigationService.Navigate(pageType);
         }
         catch (Exception ex)
         {
@@ -129,7 +125,7 @@ public partial class MainWindowViewModel : ObservableObject
         try
         {
             _logger.LogInformation("Navigating back");
-            _navigationService.GoBack();
+            _ = _navigationService.GoBack();
         }
         catch (Exception ex)
         {
@@ -146,7 +142,7 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         INavigationService navigationService,
-        PageNavigationRegistry pageRegistry)
+        IPageNavigationRegistry pageRegistry)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));

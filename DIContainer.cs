@@ -1,8 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Helpers;
-using Sheltered2SaveEditor.Navigation;
-using Sheltered2SaveEditor.Services;
+using Sheltered2SaveEditor.Core.Constants;
+using Sheltered2SaveEditor.Features.Characters.ViewModels;
+using Sheltered2SaveEditor.Features.SaveFiles;
+using Sheltered2SaveEditor.Features.SaveFiles.ViewModels;
+using Sheltered2SaveEditor.Features.Skills.ViewModels;
+using Sheltered2SaveEditor.Infrastructure.Encryption;
+using Sheltered2SaveEditor.Infrastructure.Files;
+using Sheltered2SaveEditor.Infrastructure.Navigation;
+using Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
 using Sheltered2SaveEditor.ViewModels;
 using System;
 
@@ -31,11 +37,11 @@ public static class DIContainer
         // Register logging providers
         RegisterLogging(services);
 
-        // Register core services
-        RegisterCoreServices(services);
+        // Register infrastructure services
+        RegisterInfrastructureServices(services);
 
-        // Register navigation services
-        RegisterNavigationServices(services);
+        // Register feature services
+        RegisterFeatureServices(services);
 
         // Register view models
         RegisterViewModels(services);
@@ -44,29 +50,28 @@ public static class DIContainer
     }
 
     private static void RegisterLogging(ServiceCollection services) => _ = services.AddLogging(static configure =>
-                                                                            {
-                                                                                // Use Debug and Console for development
-                                                                                _ = configure.AddDebug();
-                                                                                _ = configure.AddConsole();
-                                                                                // Set minimum log level
-                                                                                _ = configure.SetMinimumLevel(LogLevel.Information);
-                                                                            });
-
-    private static void RegisterCoreServices(ServiceCollection services)
     {
+        // Use Debug and Console for development
+        _ = configure.AddDebug();
+        _ = configure.AddConsole();
+        // Set minimum log level
+        _ = configure.SetMinimumLevel(LogLevel.Information);
+    });
+
+    private static void RegisterInfrastructureServices(ServiceCollection services)
+    {
+        // Register encryption services
+        _ = services.AddSingleton<IXorCipherService, XorCipherService>();
+
         // Register file services
         _ = services.AddSingleton<IFilePickerService, FilePickerService>();
-        _ = services.AddSingleton<IXorCipherService, XorCipherService>();
         _ = services.AddSingleton<IFileService, FileService>();
         _ = services.AddSingleton<FileValidator>();
 
         // Register dialog service
         _ = services.AddSingleton<IDialogService, DialogService>();
-    }
 
-    private static void RegisterNavigationServices(ServiceCollection services)
-    {
-        // Register navigation registry and helpers
+        // Register navigation services
         _ = services.AddSingleton<IPageNavigationRegistry>(provider =>
         {
             ILogger<PageNavigationRegistry> logger = provider.GetRequiredService<ILogger<PageNavigationRegistry>>();
@@ -75,11 +80,16 @@ public static class DIContainer
                 .Build();               // Build the registry to make it immutable
         });
 
+        // Explicitly register FrameProvider as both interface and concrete type
+        _ = services.AddSingleton<IFrameProvider, FrameProvider>();
         _ = services.AddSingleton<FrameProvider>();
 
-        // Register navigation service
         _ = services.AddSingleton<INavigationService, NavigationService>();
     }
+
+    private static void RegisterFeatureServices(ServiceCollection services) =>
+        // Register save file services
+        _ = services.AddSingleton<ISaveFileManager, SaveFileManager>();
 
     private static void RegisterViewModels(ServiceCollection services)
     {

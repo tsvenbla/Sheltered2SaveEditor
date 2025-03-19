@@ -3,9 +3,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using Sheltered2SaveEditor.Helpers;
-using Sheltered2SaveEditor.Navigation;
-using Sheltered2SaveEditor.Services;
+using Sheltered2SaveEditor.Core;
+using Sheltered2SaveEditor.Core.Constants;
+using Sheltered2SaveEditor.Infrastructure.Navigation;
+using Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
 using Sheltered2SaveEditor.ViewModels;
 using System;
 
@@ -24,7 +25,7 @@ public sealed partial class MainWindow : Window, IDisposable
     private readonly ILogger<MainWindow>? _logger;
     private readonly INavigationService? _navigationService;
     private readonly MainWindowViewModel? _viewModel;
-    private readonly PageNavigationRegistry? _pageRegistry;
+    private readonly IPageNavigationRegistry? _pageRegistry;
     private bool _disposed;
 
     /// <summary>
@@ -46,7 +47,7 @@ public sealed partial class MainWindow : Window, IDisposable
             _dialogService = DIContainer.Services.GetRequiredService<IDialogService>();
             _navigationService = DIContainer.Services.GetRequiredService<INavigationService>();
             _viewModel = DIContainer.Services.GetRequiredService<MainWindowViewModel>();
-            _pageRegistry = DIContainer.Services.GetRequiredService<PageNavigationRegistry>();
+            _pageRegistry = DIContainer.Services.GetRequiredService<IPageNavigationRegistry>();
 
             // Set DataContext for traditional data binding
             if (Content is FrameworkElement rootElement)
