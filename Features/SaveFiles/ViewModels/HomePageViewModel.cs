@@ -155,6 +155,12 @@ public partial class HomePageViewModel : ObservableObject, IDisposable
         IsSaveButtonEnabled = e.IsLoaded;
         SelectedFile = e.SaveFile;
         OnPropertyChanged(nameof(IsFileLoaded));
+
+        // Update HasUnsavedChanges based on _saveFileManager
+        HasUnsavedChanges = _saveFileManager.HasUnsavedChanges;
+
+        // Notify the command that its execute status might have changed
+        SaveFileCommand.NotifyCanExecuteChanged();
     }
 
     private void OnSaveFileModified(object? sender, SaveFileModifiedEventArgs e)

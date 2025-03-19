@@ -92,7 +92,10 @@ public class SaveFileManager(
 
             // Update state
             AppDataHelper.CurrentSaveFile = file;
-            AppDataHelper.MarkAsModified(false);
+
+            // Mark as modified to enable saving right after load
+            // This allows saving to a different location even if no changes were made
+            AppDataHelper.MarkAsModified(true);
 
             _logger.LogInformation("Successfully loaded save file: {FilePath}", file.Path);
             return true;

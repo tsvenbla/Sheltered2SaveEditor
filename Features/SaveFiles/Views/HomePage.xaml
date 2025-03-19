@@ -37,7 +37,7 @@
                     <TextBlock x:Name="LoadFileTextBlock" VerticalAlignment="Center" TextWrapping="Wrap" Text="{x:Bind ViewModel.Feedback, Mode=OneWay}" />
                     <ProgressRing x:Name="LoadFileProgressRing" VerticalAlignment="Center" IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}" />
                 </StackPanel>
-                <Button Content="Save file" Command="{x:Bind ViewModel.SaveFileCommand}" IsEnabled="{x:Bind ViewModel.IsFileLoaded, Mode=OneWay}" />
+                <Button Content="Save file" Command="{x:Bind ViewModel.SaveFileCommand}" />
             </StackPanel>
         </Border>
     </StackPanel>

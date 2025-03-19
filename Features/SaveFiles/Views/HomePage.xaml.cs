@@ -10,7 +10,7 @@ public sealed partial class HomePage : Page
 
     public HomePage()
     {
-        InitializeComponent();
         ViewModel = DIContainer.Services.GetRequiredService<HomePageViewModel>();
+        InitializeComponent();
     }
 }

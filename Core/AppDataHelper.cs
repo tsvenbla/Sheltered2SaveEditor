@@ -63,6 +63,15 @@ public static class AppDataHelper
             {
                 _currentSaveFile = value;
                 IsSaveFileLoaded = value != null;
+
+                // When loading a new file, mark it as modified to enable Save button
+                if (value != null)
+                {
+                    MarkAsModified(true);
+                }
+
+                // Include the file in the event args
+                OnSaveFileLoaded(new SaveFileLoadedEventArgs { IsLoaded = value != null, SaveFile = value });
             }
         }
     }

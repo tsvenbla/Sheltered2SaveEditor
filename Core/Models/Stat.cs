@@ -1,5 +1,4 @@
-﻿// Core/Models/Stat.cs
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 
 namespace Sheltered2SaveEditor.Core.Models;
