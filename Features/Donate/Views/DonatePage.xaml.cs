@@ -5,11 +5,11 @@ using System.Collections.ObjectModel;
 
 namespace Sheltered2SaveEditor.Features.Donate.Views;
 
-public sealed partial class DonatePage : Page
+internal sealed partial class DonatePage : Page
 {
-    public ObservableCollection<DonationItem> Donations { get; } = [];
+    internal ObservableCollection<DonationItem> Donations { get; } = [];
 
-    public DonatePage()
+    internal DonatePage()
     {
         InitializeComponent();
         LoadDonations();

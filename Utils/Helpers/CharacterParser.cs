@@ -1,5 +1,6 @@
 ﻿using Sheltered2SaveEditor.Core.Models;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -8,16 +9,16 @@ namespace Sheltered2SaveEditor.Utils.Helpers;
 /// <summary>
 /// Provides methods for parsing character data from save files.
 /// </summary>
-public static class CharacterParser
+internal static class CharacterParser
 {
     /// <summary>
     /// Parses the decrypted XML content and extracts character data.
     /// </summary>
     /// <param name="decryptedContent">The decrypted XML content of the save file.</param>
-    /// <returns>A list of Character objects parsed from the content.</returns>
-    public static List<Character> ParseCharacters(string decryptedContent)
+    /// <returns>A collection of Character objects parsed from the content.</returns>
+    internal static Collection<Character> ParseCharacters(string decryptedContent)
     {
-        List<Character> characters = [];
+        Collection<Character> characters = [];
 
         try
         {

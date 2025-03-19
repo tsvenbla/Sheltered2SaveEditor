@@ -9,4 +9,4 @@
 /// <param name="Name">The display name of the skill.</param>
 /// <param name="MaxLevel">The maximum level attainable for the skill.</param>
 /// <param name="ToolTip">A description or tooltip for the skill.</param>
-public record SkillDefinition(int SkillKey, int Tier, int DisplayOrder, string Name, int MaxLevel, string ToolTip);
+internal record SkillDefinition(int SkillKey, int Tier, int DisplayOrder, string Name, int MaxLevel, string ToolTip);

@@ -9,7 +9,7 @@ namespace Sheltered2SaveEditor.Features.SaveFiles;
 /// <summary>
 /// Defines methods for managing save files.
 /// </summary>
-public interface ISaveFileManager
+internal interface ISaveFileManager
 {
     /// <summary>
     /// Gets a value indicating whether a save file is currently loaded.

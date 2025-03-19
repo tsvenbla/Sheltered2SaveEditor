@@ -4,11 +4,11 @@ using Sheltered2SaveEditor.Features.Characters.ViewModels;
 
 namespace Sheltered2SaveEditor.Features.Characters.Views;
 
-public sealed partial class CharactersPage : Page
+internal sealed partial class CharactersPage : Page
 {
-    public CharactersViewModel ViewModel { get; }
+    internal CharactersViewModel ViewModel { get; }
 
-    public CharactersPage()
+    internal CharactersPage()
     {
         ViewModel = DIContainer.Services.GetRequiredService<CharactersViewModel>();
         InitializeComponent();

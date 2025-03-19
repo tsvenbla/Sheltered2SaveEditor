@@ -5,12 +5,12 @@ namespace Sheltered2SaveEditor.Features.Donate.Models;
 /// <summary>
 /// Represents a donation item with its associated properties.
 /// </summary>
-public class DonationItem
+internal class DonationItem
 {
-    public string? ItemTitle { get; set; }
-    public string? ItemImagePath { get; set; }
-    public string? ItemImageAutomationName { get; set; }
-    public Uri? ItemNavigateUri { get; set; }
-    public string? ItemButtonContent { get; set; }
-    public string? ItemAddress { get; set; }
+    internal string? ItemTitle { get; set; }
+    internal string? ItemImagePath { get; set; }
+    internal string? ItemImageAutomationName { get; set; }
+    internal Uri? ItemNavigateUri { get; set; }
+    internal string? ItemButtonContent { get; set; }
+    internal string? ItemAddress { get; set; }
 }

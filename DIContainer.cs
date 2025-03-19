@@ -17,7 +17,7 @@ namespace Sheltered2SaveEditor;
 /// <summary>
 /// Provides a centralized container for dependency injection services.
 /// </summary>
-public static class DIContainer
+internal static class DIContainer
 {
     private static readonly Lazy<ServiceProvider> _serviceProviderLazy = new(ConfigureServices);
 

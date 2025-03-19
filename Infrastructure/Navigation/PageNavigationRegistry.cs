@@ -9,7 +9,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Navigation;
 /// <summary>
 /// Defines the contract for a navigation registry that maps navigation keys to page types.
 /// </summary>
-public interface IPageNavigationRegistry
+internal interface IPageNavigationRegistry
 {
     /// <summary>
     /// Registers a page type with the specified navigation key.
@@ -48,7 +48,7 @@ public interface IPageNavigationRegistry
 /// Maintains a registry of navigation keys mapped to page types
 /// for type-safe navigation throughout the application.
 /// </summary>
-public sealed class PageNavigationRegistry : IPageNavigationRegistry
+internal sealed class PageNavigationRegistry : IPageNavigationRegistry
 {
     private readonly ILogger<PageNavigationRegistry> _logger;
     private readonly Type _defaultPageType;

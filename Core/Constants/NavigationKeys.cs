@@ -4,7 +4,7 @@
 /// Provides constant string values for navigation destinations in the application.
 /// These constants are used as tags for NavigationViewItems and for programmatic navigation.
 /// </summary>
-public static class NavigationKeys
+internal static class NavigationKeys
 {
     public const string Home = "Home";
     public const string Characters = "Characters";

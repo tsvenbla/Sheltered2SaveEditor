@@ -11,17 +11,17 @@ namespace Sheltered2SaveEditor.Features.Skills.ViewModels;
 /// <summary>
 /// ViewModel for managing the Strength skill tree.
 /// </summary>
-public partial class StrengthSkillsViewModel : ObservableObject
+internal partial class StrengthSkillsViewModel : ObservableObject
 {
     /// <summary>
     /// Gets the collection of skill instances for the Strength skill tree.
     /// </summary>
-    public ObservableCollection<SkillInstanceViewModel> Skills { get; } = [];
+    internal ObservableCollection<SkillInstanceViewModel> Skills { get; } = [];
 
     /// <summary>
     /// Gets the skills grouped by their tier (1 to 3) in ascending order.
     /// </summary>
-    public IEnumerable<IGrouping<int, SkillInstanceViewModel>> GroupedSkills =>
+    internal IEnumerable<IGrouping<int, SkillInstanceViewModel>> GroupedSkills =>
         (IEnumerable<IGrouping<int, SkillInstanceViewModel>>)Skills.GroupBy(skill => skill.Tier)
               .OrderBy(g => g.Key)
               .Select(g => g.OrderBy(skill => skill.DisplayOrder));
@@ -29,13 +29,13 @@ public partial class StrengthSkillsViewModel : ObservableObject
     /// <summary>
     /// Gets the command that maximizes all skills in the Strength skill tree.
     /// </summary>
-    public RelayCommand MaximizeSkillsCommand { get; }
+    internal RelayCommand MaximizeSkillsCommand { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StrengthSkillsViewModel"/> class.
     /// Loads the strength skill definitions from the lookup table.
     /// </summary>
-    public StrengthSkillsViewModel()
+    internal StrengthSkillsViewModel()
     {
         ImmutableArray<SkillDefinition> definitions = CharacterSkillDefinitions.StrengthSkillDefinitions;
         foreach (SkillDefinition def in definitions)
@@ -49,7 +49,7 @@ public partial class StrengthSkillsViewModel : ObservableObject
     /// <summary>
     /// Maximizes all skills in the Strength skill tree by setting each skill's current level to its maximum.
     /// </summary>
-    public void MaximizeSkills()
+    internal void MaximizeSkills()
     {
         foreach (SkillInstanceViewModel skill in Skills)
         {

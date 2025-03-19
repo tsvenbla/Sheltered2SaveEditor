@@ -6,7 +6,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Navigation;
 /// <summary>
 /// Defines a service that manages navigation between pages in the application.
 /// </summary>
-public interface INavigationService
+internal interface INavigationService
 {
     /// <summary>
     /// Gets a value indicating whether navigation can go back.

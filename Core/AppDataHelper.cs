@@ -11,23 +11,23 @@ namespace Sheltered2SaveEditor.Core;
 /// <summary>
 /// Provides centralized access to application data and state.
 /// </summary>
-public static class AppDataHelper
+internal static class AppDataHelper
 {
     #region Events
     /// <summary>
     /// Event raised when a character is selected.
     /// </summary>
-    public static event EventHandler<CharacterSelectedEventArgs>? CharacterSelected;
+    internal static event EventHandler<CharacterSelectedEventArgs>? CharacterSelected;
 
     /// <summary>
     /// Event raised when a save file is loaded.
     /// </summary>
-    public static event EventHandler<SaveFileLoadedEventArgs>? SaveFileLoaded;
+    internal static event EventHandler<SaveFileLoadedEventArgs>? SaveFileLoaded;
 
     /// <summary>
     /// Event raised when a save file is modified.
     /// </summary>
-    public static event EventHandler<SaveFileModifiedEventArgs>? SaveFileModified;
+    internal static event EventHandler<SaveFileModifiedEventArgs>? SaveFileModified;
     #endregion
 
     #region Properties
@@ -36,7 +36,7 @@ public static class AppDataHelper
     /// <summary>
     /// Gets or sets a value indicating whether a save file has been loaded.
     /// </summary>
-    public static bool IsSaveFileLoaded
+    internal static bool IsSaveFileLoaded
     {
         get => _isSaveFileLoaded;
         set
@@ -54,7 +54,7 @@ public static class AppDataHelper
     /// <summary>
     /// Gets or sets the currently loaded save file.
     /// </summary>
-    public static StorageFile? CurrentSaveFile
+    internal static StorageFile? CurrentSaveFile
     {
         get => _currentSaveFile;
         set
@@ -81,7 +81,7 @@ public static class AppDataHelper
     /// <summary>
     /// Gets or sets the currently selected character.
     /// </summary>
-    public static Character? SelectedCharacter
+    internal static Character? SelectedCharacter
     {
         get => _selectedCharacter;
         set
@@ -99,24 +99,24 @@ public static class AppDataHelper
     /// <summary>
     /// Gets a read-only view of the characters parsed from the save file.
     /// </summary>
-    public static ReadOnlyCollection<Character> Characters => _characters.AsReadOnly();
+    internal static ReadOnlyCollection<Character> Characters => _characters.AsReadOnly();
 
     /// <summary>
     /// Gets or sets the decrypted XML document from the save file.
     /// </summary>
-    public static XDocument? SaveDocument { get; set; }
+    internal static XDocument? SaveDocument { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the save file has been modified.
     /// </summary>
-    public static bool IsSaveFileModified { get; set; }
+    internal static bool IsSaveFileModified { get; set; }
     #endregion
 
     #region Methods
     /// <summary>
     /// Clears all application data.
     /// </summary>
-    public static void Clear()
+    internal static void Clear()
     {
         _characters.Clear();
         SelectedCharacter = null;
@@ -130,7 +130,7 @@ public static class AppDataHelper
     /// Updates the character collection with a new list of characters.
     /// </summary>
     /// <param name="characters">The new characters to set.</param>
-    public static void UpdateCharacters(IEnumerable<Character> characters)
+    internal static void UpdateCharacters(IEnumerable<Character> characters)
     {
         _characters.Clear();
         _characters.AddRange(characters);
@@ -144,7 +144,7 @@ public static class AppDataHelper
     /// </summary>
     /// <param name="isModified">Whether the save file is modified.</param>
     /// <param name="callerMemberName">The name of the member that called this method.</param>
-    public static void MarkAsModified(bool isModified = true, [CallerMemberName] string callerMemberName = "")
+    internal static void MarkAsModified(bool isModified = true, [CallerMemberName] string callerMemberName = "")
     {
         IsSaveFileModified = isModified;
         OnSaveFileModified(new SaveFileModifiedEventArgs { IsModified = isModified, Source = callerMemberName });
@@ -161,7 +161,7 @@ public static class AppDataHelper
 /// <summary>
 /// Contains event data for the <see cref="AppDataHelper.CharacterSelected"/> event.
 /// </summary>
-public class CharacterSelectedEventArgs : EventArgs
+internal class CharacterSelectedEventArgs : EventArgs
 {
     /// <summary>
     /// Gets or sets the selected character.
@@ -172,31 +172,31 @@ public class CharacterSelectedEventArgs : EventArgs
 /// <summary>
 /// Contains event data for the <see cref="AppDataHelper.SaveFileLoaded"/> event.
 /// </summary>
-public class SaveFileLoadedEventArgs : EventArgs
+internal class SaveFileLoadedEventArgs : EventArgs
 {
     /// <summary>
     /// Gets or sets a value indicating whether a file is loaded.
     /// </summary>
-    public bool IsLoaded { get; set; }
+    internal bool IsLoaded { get; set; }
 
     /// <summary>
     /// Gets or sets the loaded save file.
     /// </summary>
-    public StorageFile? SaveFile { get; set; }
+    internal StorageFile? SaveFile { get; set; }
 }
 
 /// <summary>
 /// Contains event data for the <see cref="AppDataHelper.SaveFileModified"/> event.
 /// </summary>
-public class SaveFileModifiedEventArgs : EventArgs
+internal class SaveFileModifiedEventArgs : EventArgs
 {
     /// <summary>
     /// Gets or sets a value indicating whether the save file is modified.
     /// </summary>
-    public bool IsModified { get; set; }
+    internal bool IsModified { get; set; }
 
     /// <summary>
     /// Gets or sets the source of the modification.
     /// </summary>
-    public string? Source { get; set; }
+    internal string? Source { get; set; }
 }

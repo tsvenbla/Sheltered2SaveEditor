@@ -5,7 +5,7 @@ namespace Sheltered2SaveEditor.Core.Models;
 /// <summary>
 /// Represents a character in the game with their attributes and stats.
 /// </summary>
-public partial class Character : ObservableObject
+internal partial class Character : ObservableObject
 {
     private string _firstName = string.Empty;
     private string _lastName = string.Empty;
@@ -20,32 +20,32 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets the character's strength stat.
     /// </summary>
-    public Stat Strength { get; set; } = new Stat();
+    internal Stat Strength { get; set; } = new Stat();
 
     /// <summary>
     /// Gets or sets the character's dexterity stat.
     /// </summary>
-    public Stat Dexterity { get; set; } = new Stat();
+    internal Stat Dexterity { get; set; } = new Stat();
 
     /// <summary>
     /// Gets or sets the character's intelligence stat.
     /// </summary>
-    public Stat Intelligence { get; set; } = new Stat();
+    internal Stat Intelligence { get; set; } = new Stat();
 
     /// <summary>
     /// Gets or sets the character's charisma stat.
     /// </summary>
-    public Stat Charisma { get; set; } = new Stat();
+    internal Stat Charisma { get; set; } = new Stat();
 
     /// <summary>
     /// Gets or sets the character's perception stat.
     /// </summary>
-    public Stat Perception { get; set; } = new Stat();
+    internal Stat Perception { get; set; } = new Stat();
 
     /// <summary>
     /// Gets or sets the character's fortitude stat.
     /// </summary>
-    public Stat Fortitude { get; set; } = new Stat();
+    internal Stat Fortitude { get; set; } = new Stat();
 
     /// <summary>
     /// Gets the collection of strength skills for this character.
@@ -55,7 +55,7 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets the character's first name.
     /// </summary>
-    public string FirstName
+    internal string FirstName
     {
         get => _firstName;
         set
@@ -72,7 +72,7 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets the character's last name.
     /// </summary>
-    public string LastName
+    internal string LastName
     {
         get => _lastName;
         set
@@ -89,12 +89,12 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets the character's full name (first name + last name).
     /// </summary>
-    public string FullName => $"{FirstName} {LastName}";
+    internal string FullName => $"{FirstName} {LastName}";
 
     /// <summary>
     /// Gets or sets the character's current health.
     /// </summary>
-    public int CurrentHealth
+    internal int CurrentHealth
     {
         get => _currentHealth;
         set
@@ -110,7 +110,7 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets the character's maximum health.
     /// </summary>
-    public int MaxHealth
+    internal int MaxHealth
     {
         get => _maxHealth;
         set
@@ -126,7 +126,7 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the character is interacting.
     /// </summary>
-    public bool Interacting
+    internal bool Interacting
     {
         get => _interacting;
         set
@@ -142,7 +142,7 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the character is interacting with an object.
     /// </summary>
-    public bool InteractingWithObj
+    internal bool InteractingWithObj
     {
         get => _interactingWithObj;
         set
@@ -158,7 +158,7 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the character has been defibrillated.
     /// </summary>
-    public bool HasBeenDefibbed
+    internal bool HasBeenDefibbed
     {
         get => _hasBeenDefibbed;
         set
@@ -174,7 +174,7 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the character is passed out.
     /// </summary>
-    public bool PassedOut
+    internal bool PassedOut
     {
         get => _passedout;
         set
@@ -190,7 +190,7 @@ public partial class Character : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the character is unconscious.
     /// </summary>
-    public bool IsUnconscious
+    internal bool IsUnconscious
     {
         get => _unconscious;
         set

@@ -82,7 +82,7 @@ public sealed record FileValidationOptions
     /// This may improve performance for large files but could increase memory usage.
     /// Only applies to files larger than 10MB by default.
     /// </remarks>
-    public bool EnableParallelProcessing { get; init; } = false;
+    public bool EnableParallelProcessing { get; init; } = true;
 
     /// <summary>
     /// Gets the size threshold in bytes above which parallel processing is considered if enabled.
@@ -442,14 +442,14 @@ public sealed class FileValidator
 
         try
         {
-            await progressMonitor.StartValidationAsync(file.Name, fileInfo != null ? (ulong)fileInfo.Length : 0UL, combinedToken);
+            await progressMonitor.StartValidationAsync(file.Name, fileInfo != null ? (ulong)fileInfo.Length : 0UL, combinedToken).ConfigureAwait(false);
 
             // Start with retries for common I/O operations
             using IRandomAccessStreamWithContentType? stream = await RetryAsync(
                 async () => await file.OpenReadAsync(),
                 _options.RetryAttempts,
                 _options.RetryDelayMilliseconds,
-                combinedToken);
+                combinedToken).ConfigureAwait(false);
 
             if (stream == null)
             {
@@ -460,11 +460,11 @@ public sealed class FileValidator
                     null,
                     stopwatch.ElapsedMilliseconds,
                     fileInfo);
-                await progressMonitor.CompleteValidationAsync(resultInfo, combinedToken);
+                await progressMonitor.CompleteValidationAsync(resultInfo, combinedToken).ConfigureAwait(false);
                 return resultInfo;
             }
 
-            await progressMonitor.ReportProgressAsync(10, "File opened, checking size constraints", combinedToken);
+            await progressMonitor.ReportProgressAsync(10, "File opened, checking size constraints", combinedToken).ConfigureAwait(false);
 
             // Check file size constraints
             if (stream.Size > _options.MaxFileSize)
@@ -476,7 +476,7 @@ public sealed class FileValidator
                     null,
                     stopwatch.ElapsedMilliseconds,
                     fileInfo);
-                await progressMonitor.CompleteValidationAsync(resultInfo, combinedToken);
+                await progressMonitor.CompleteValidationAsync(resultInfo, combinedToken).ConfigureAwait(false);
                 return resultInfo;
             }
 
@@ -489,17 +489,17 @@ public sealed class FileValidator
                     null,
                     stopwatch.ElapsedMilliseconds,
                     fileInfo);
-                await progressMonitor.CompleteValidationAsync(resultInfo, combinedToken);
+                await progressMonitor.CompleteValidationAsync(resultInfo, combinedToken).ConfigureAwait(false);
                 return resultInfo;
             }
 
-            await progressMonitor.ReportProgressAsync(20, "Size validation passed, beginning content validation", combinedToken);
+            await progressMonitor.ReportProgressAsync(20, "Size validation passed, beginning content validation", combinedToken).ConfigureAwait(false);
 
             // For small files (under 1MB), we can read the entire file at once
             if (stream.Size < 1024 * 1024)
             {
-                await progressMonitor.ReportProgressAsync(30, "Small file detected, using simplified validation", combinedToken);
-                ValidationResultInfo result = await ValidateSmallFileWithDetailsAsync(stream, progressMonitor, combinedToken);
+                await progressMonitor.ReportProgressAsync(30, "Small file detected, using simplified validation", combinedToken).ConfigureAwait(false);
+                ValidationResultInfo result = await ValidateSmallFileWithDetailsAsync(stream, progressMonitor, combinedToken).ConfigureAwait(false);
                 stopwatch.Stop();
                 result = new ValidationResultInfo(
                     result.Result,
@@ -507,13 +507,13 @@ public sealed class FileValidator
                     result.Exception,
                     stopwatch.ElapsedMilliseconds,
                     fileInfo);
-                await progressMonitor.CompleteValidationAsync(result, combinedToken);
+                await progressMonitor.CompleteValidationAsync(result, combinedToken).ConfigureAwait(false);
                 return result;
             }
 
             // For larger files, we'll use a more memory-efficient approach
-            await progressMonitor.ReportProgressAsync(30, "Large file detected, using optimized validation", combinedToken);
-            ValidationResultInfo largeFileResult = await ValidateLargeFileWithDetailsAsync(stream, progressMonitor, combinedToken);
+            await progressMonitor.ReportProgressAsync(30, "Large file detected, using optimized validation", combinedToken).ConfigureAwait(false);
+            ValidationResultInfo largeFileResult = await ValidateLargeFileWithDetailsAsync(stream, progressMonitor, combinedToken).ConfigureAwait(false);
             stopwatch.Stop();
             largeFileResult = new ValidationResultInfo(
                 largeFileResult.Result,
@@ -521,7 +521,7 @@ public sealed class FileValidator
                 largeFileResult.Exception,
                 stopwatch.ElapsedMilliseconds,
                 fileInfo);
-            await progressMonitor.CompleteValidationAsync(largeFileResult, combinedToken);
+            await progressMonitor.CompleteValidationAsync(largeFileResult, combinedToken).ConfigureAwait(false);
             return largeFileResult;
         }
         catch (OperationCanceledException)
@@ -540,7 +540,7 @@ public sealed class FileValidator
                     null,
                     stopwatch.ElapsedMilliseconds,
                     fileInfo);
-            await progressMonitor.CompleteValidationAsync(result, CancellationToken.None); // Use a non-cancelled token
+            await progressMonitor.CompleteValidationAsync(result, CancellationToken.None).ConfigureAwait(false); // Use a non-cancelled token
             return result;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -552,7 +552,7 @@ public sealed class FileValidator
                 ex,
                 stopwatch.ElapsedMilliseconds,
                 fileInfo);
-            await progressMonitor.CompleteValidationAsync(result, CancellationToken.None);
+            await progressMonitor.CompleteValidationAsync(result, CancellationToken.None).ConfigureAwait(false);
             return result;
         }
         catch (Exception ex)
@@ -565,7 +565,7 @@ public sealed class FileValidator
                 ex,
                 stopwatch.ElapsedMilliseconds,
                 fileInfo);
-            await progressMonitor.CompleteValidationAsync(result, CancellationToken.None);
+            await progressMonitor.CompleteValidationAsync(result, CancellationToken.None).ConfigureAwait(false);
             return result;
         }
         finally
@@ -586,7 +586,7 @@ public sealed class FileValidator
     {
         try
         {
-            ValidationResult result = await ValidateSaveFileAsync(file, cancellationToken);
+            ValidationResult result = await ValidateSaveFileAsync(file, cancellationToken).ConfigureAwait(false);
 
             // Consider both Valid and ValidWithWarnings as successfully validated
             return result is ValidationResult.Valid or ValidationResult.ValidWithWarnings;
@@ -608,7 +608,7 @@ public sealed class FileValidator
         IValidationProgressMonitor progressMonitor,
         CancellationToken cancellationToken)
     {
-        await progressMonitor.ReportProgressAsync(40, "Reading small file content", cancellationToken);
+        await progressMonitor.ReportProgressAsync(40, "Reading small file content", cancellationToken).ConfigureAwait(false);
 
         byte[] encryptedData;
         try
@@ -621,7 +621,7 @@ public sealed class FileValidator
             stream.Seek(0);
 
             // Read the data
-            int bytesRead = await stream.AsStream().ReadAsync(encryptedData.AsMemory(0, streamSize), cancellationToken);
+            int bytesRead = await stream.AsStream().ReadAsync(encryptedData.AsMemory(0, streamSize), cancellationToken).ConfigureAwait(false);
 
             // If we didn't read the full size, resize the array
             if (bytesRead < streamSize)
@@ -646,7 +646,7 @@ public sealed class FileValidator
                 ex);
         }
 
-        await progressMonitor.ReportProgressAsync(60, "Decrypting file content", cancellationToken);
+        await progressMonitor.ReportProgressAsync(60, "Decrypting file content", cancellationToken).ConfigureAwait(false);
 
         byte[] decryptedData;
         try
@@ -668,7 +668,7 @@ public sealed class FileValidator
                 "Decryption produced empty content");
         }
 
-        await progressMonitor.ReportProgressAsync(80, "Validating file structure", cancellationToken);
+        await progressMonitor.ReportProgressAsync(80, "Validating file structure", cancellationToken).ConfigureAwait(false);
 
         bool isValidSignature = HasValidSignature(decryptedData);
         if (!isValidSignature)
@@ -701,7 +701,7 @@ public sealed class FileValidator
             if (_options.BypassValidationFailures)
             {
                 _logger?.LogWarning("Bypassing file signature validation failure");
-                await progressMonitor.ReportProgressAsync(100, "Validation bypassed", cancellationToken);
+                await progressMonitor.ReportProgressAsync(100, "Validation bypassed", cancellationToken).ConfigureAwait(false);
                 return ValidationResultInfo.Success(0);
             }
 
@@ -713,7 +713,7 @@ public sealed class FileValidator
         // If structure validation is enabled, do a more thorough check
         if (_options.ValidateStructure)
         {
-            await progressMonitor.ReportProgressAsync(90, "Performing advanced structure validation", cancellationToken);
+            await progressMonitor.ReportProgressAsync(90, "Performing advanced structure validation", cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -732,7 +732,7 @@ public sealed class FileValidator
                     if (_options.BypassValidationFailures)
                     {
                         _logger?.LogWarning("File has unbalanced XML tags, but bypassing validation failure");
-                        await progressMonitor.ReportProgressAsync(100, "Validation bypassed", cancellationToken);
+                        await progressMonitor.ReportProgressAsync(100, "Validation bypassed", cancellationToken).ConfigureAwait(false);
                         return ValidationResultInfo.Success(0);
                     }
 
@@ -746,7 +746,7 @@ public sealed class FileValidator
                 if (_options.BypassValidationFailures)
                 {
                     _logger?.LogWarning(ex, "Error during structure validation, but bypassing validation failure");
-                    await progressMonitor.ReportProgressAsync(100, "Validation bypassed", cancellationToken);
+                    await progressMonitor.ReportProgressAsync(100, "Validation bypassed", cancellationToken).ConfigureAwait(false);
                     return ValidationResultInfo.Success(0);
                 }
 
@@ -757,7 +757,7 @@ public sealed class FileValidator
             }
         }
 
-        await progressMonitor.ReportProgressAsync(100, "Validation completed successfully", cancellationToken);
+        await progressMonitor.ReportProgressAsync(100, "Validation completed successfully", cancellationToken).ConfigureAwait(false);
         return ValidationResultInfo.Success(0);
     }
 
@@ -776,8 +776,8 @@ public sealed class FileValidator
         // Check if the file is at least big enough to contain our header and footer
         if (stream.Size < (ulong)(bufferSize + _expectedHeaderBytes.Length + _expectedFooterBytes.Length))
         {
-            await progressMonitor.ReportProgressAsync(40, "File size is at boundary, using small file validation", cancellationToken);
-            return await ValidateSmallFileWithDetailsAsync(stream, progressMonitor, cancellationToken);
+            await progressMonitor.ReportProgressAsync(40, "File size is at boundary, using small file validation", cancellationToken).ConfigureAwait(false);
+            return await ValidateSmallFileWithDetailsAsync(stream, progressMonitor, cancellationToken).ConfigureAwait(false);
         }
 
         // Allocate buffers only once and return them after use
@@ -787,7 +787,7 @@ public sealed class FileValidator
         try
         {
             // Read and validate header
-            await progressMonitor.ReportProgressAsync(40, "Reading file header", cancellationToken);
+            await progressMonitor.ReportProgressAsync(40, "Reading file header", cancellationToken).ConfigureAwait(false);
 
             // Get a buffer from pool 
             headerBuffer = ArrayPool<byte>.Shared.Rent(bufferSize);
@@ -799,7 +799,7 @@ public sealed class FileValidator
 
                 // Read header chunk
                 Stream headerStream = stream.AsStream();
-                int bytesRead = await headerStream.ReadAsync(headerBuffer.AsMemory(0, bufferSize), cancellationToken);
+                int bytesRead = await headerStream.ReadAsync(headerBuffer.AsMemory(0, bufferSize), cancellationToken).ConfigureAwait(false);
 
                 if (bytesRead == 0)
                 {
@@ -808,7 +808,7 @@ public sealed class FileValidator
                         "Unable to read file header: no bytes read");
                 }
 
-                await progressMonitor.ReportProgressAsync(50, "Decrypting file header", cancellationToken);
+                await progressMonitor.ReportProgressAsync(50, "Decrypting file header", cancellationToken).ConfigureAwait(false);
 
                 // Decrypt the header
                 byte[] decryptedHeader;
@@ -849,7 +849,7 @@ public sealed class FileValidator
                     if (_options.BypassValidationFailures)
                     {
                         _logger?.LogWarning("Bypassing header validation failure");
-                        await progressMonitor.ReportProgressAsync(100, "Header validation bypassed", cancellationToken);
+                        await progressMonitor.ReportProgressAsync(100, "Header validation bypassed", cancellationToken).ConfigureAwait(false);
                         return ValidationResultInfo.Success(0);
                     }
 
@@ -859,7 +859,7 @@ public sealed class FileValidator
                 }
 
                 // Read and validate footer in multiple attempts
-                await progressMonitor.ReportProgressAsync(70, "Reading file footer", cancellationToken);
+                await progressMonitor.ReportProgressAsync(70, "Reading file footer", cancellationToken).ConfigureAwait(false);
 
                 // Get a buffer from pool for footer
                 footerBuffer = ArrayPool<byte>.Shared.Rent(bufferSize);
@@ -878,7 +878,7 @@ public sealed class FileValidator
                         stream.Seek((ulong)position);
 
                         Stream footerStream = stream.AsStream();
-                        int bytesRead2 = await footerStream.ReadAsync(footerBuffer.AsMemory(0, bufferSize), cancellationToken);
+                        int bytesRead2 = await footerStream.ReadAsync(footerBuffer.AsMemory(0, bufferSize), cancellationToken).ConfigureAwait(false);
 
                         if (bytesRead2 == 0)
                         {
@@ -887,7 +887,7 @@ public sealed class FileValidator
                         }
 
                         await progressMonitor.ReportProgressAsync(80 + attempt * 5,
-                            $"Decrypting file footer (attempt {attempt + 1}/3)", cancellationToken);
+                            $"Decrypting file footer (attempt {attempt + 1}/3)", cancellationToken).ConfigureAwait(false);
 
                         byte[] decryptedFooter;
                         try
@@ -926,7 +926,7 @@ public sealed class FileValidator
                     if (_options.BypassValidationFailures)
                     {
                         _logger?.LogWarning("Bypassing footer validation failure");
-                        await progressMonitor.ReportProgressAsync(100, "Footer validation bypassed", cancellationToken);
+                        await progressMonitor.ReportProgressAsync(100, "Footer validation bypassed", cancellationToken).ConfigureAwait(false);
                         return ValidationResultInfo.Success(0);
                     }
 
@@ -1066,7 +1066,7 @@ public sealed class FileValidator
                         using CancellationTokenSource linkedCts =
                             CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
-                        await Task.Delay(delayMilliseconds, linkedCts.Token);
+                        await Task.Delay(delayMilliseconds, linkedCts.Token).ConfigureAwait(false);
                     }
                 }
                 catch (OperationCanceledException)

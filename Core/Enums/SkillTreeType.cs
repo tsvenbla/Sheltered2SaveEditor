@@ -3,7 +3,7 @@
 /// <summary>
 /// Specifies the different types of skill trees available.
 /// </summary>
-public enum SkillTreeType
+internal enum SkillTreeType
 {
     /// <summary>
     /// The strength skill tree.

@@ -11,14 +11,14 @@ namespace Sheltered2SaveEditor.Features.Characters.ViewModels;
 /// ViewModel for managing and presenting the list of characters and related operations.
 /// Implements functionality for selecting a character and maximizing its stats.
 /// </summary>
-public partial class CharactersViewModel : ObservableObject
+internal partial class CharactersViewModel : ObservableObject
 {
     private ObservableCollection<Character> _characters = [.. AppDataHelper.Characters];
 
     /// <summary>
     /// Gets or sets the collection of characters displayed in the UI.
     /// </summary>
-    public ObservableCollection<Character> Characters
+    internal ObservableCollection<Character> Characters
     {
         get => _characters;
         set => SetProperty(ref _characters, value);
@@ -29,7 +29,7 @@ public partial class CharactersViewModel : ObservableObject
     /// <summary>
     /// Gets or sets the currently selected character.
     /// </summary>
-    public Character? SelectedCharacter
+    internal Character? SelectedCharacter
     {
         get => _selectedCharacter;
         set
@@ -49,14 +49,14 @@ public partial class CharactersViewModel : ObservableObject
     /// <summary>
     /// Gets a value indicating whether a character is currently selected.
     /// </summary>
-    public bool IsCharacterSelected => SelectedCharacter != null;
+    internal bool IsCharacterSelected => SelectedCharacter != null;
 
     private string _feedback = string.Empty;
 
     /// <summary>
     /// Gets or sets the feedback message to display in the UI.
     /// </summary>
-    public string Feedback
+    internal string Feedback
     {
         get => _feedback;
         set => SetProperty(ref _feedback, value);
@@ -65,18 +65,18 @@ public partial class CharactersViewModel : ObservableObject
     /// <summary>
     /// Gets the command that maximizes the stats of the selected character.
     /// </summary>
-    public RelayCommand MaximizeStatsCommand { get; }
+    internal RelayCommand MaximizeStatsCommand { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CharactersViewModel"/> class.
     /// Sets up the commands and default values.
     /// </summary>
-    public CharactersViewModel() => MaximizeStatsCommand = new RelayCommand(MaximizeStats, () => SelectedCharacter != null);
+    internal CharactersViewModel() => MaximizeStatsCommand = new RelayCommand(MaximizeStats, () => SelectedCharacter != null);
 
     /// <summary>
     /// Maximizes all stats of the selected character by setting each stat's level to 20.
     /// </summary>
-    public void MaximizeStats()
+    internal void MaximizeStats()
     {
         bool allMaxed = true;
 

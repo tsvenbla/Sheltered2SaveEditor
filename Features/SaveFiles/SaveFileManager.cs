@@ -5,6 +5,7 @@ using Sheltered2SaveEditor.Infrastructure.Files;
 using Sheltered2SaveEditor.Utils.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -22,7 +23,7 @@ namespace Sheltered2SaveEditor.Features.SaveFiles;
 /// <param name="filePickerService">The file picker service.</param>
 /// <param name="fileValidator">The file validator.</param>
 /// <param name="logger">The logger.</param>
-public class SaveFileManager(
+internal class SaveFileManager(
     IFileService fileService,
     IFilePickerService filePickerService,
     FileValidator fileValidator,
@@ -72,7 +73,7 @@ public class SaveFileManager(
             }
 
             // Validate the file contents
-            bool isValid = await _fileValidator.IsValidSaveFileAsync(file, cancellationToken);
+            bool isValid = await _fileValidator.IsValidSaveFileAsync(file, cancellationToken).ConfigureAwait(false);
             if (!isValid)
             {
                 _logger.LogWarning("Invalid file format: {FilePath}", file.Path);
@@ -80,14 +81,14 @@ public class SaveFileManager(
             }
 
             // Load and decrypt the file
-            string decryptedContent = await _fileService.LoadAndDecryptSaveFileAsync(file, cancellationToken);
+            string decryptedContent = await _fileService.LoadAndDecryptSaveFileAsync(file, cancellationToken).ConfigureAwait(false);
 
             // Parse the XML
             XDocument document = XDocument.Parse(decryptedContent);
             AppDataHelper.SaveDocument = document;
 
             // Extract character data
-            List<Character> characters = CharacterParser.ParseCharacters(decryptedContent);
+            Collection<Character> characters = CharacterParser.ParseCharacters(decryptedContent);
             AppDataHelper.UpdateCharacters(characters);
 
             // Update state
@@ -122,7 +123,7 @@ public class SaveFileManager(
             // Create backup if requested
             if (createBackup)
             {
-                StorageFile? backupFile = await _fileService.CreateBackupAsync(CurrentFile, cancellationToken);
+                StorageFile? backupFile = await _fileService.CreateBackupAsync(CurrentFile, cancellationToken).ConfigureAwait(false);
                 if (backupFile == null)
                 {
                     _logger.LogWarning("Failed to create backup of file: {FilePath}", CurrentFile.Path);
@@ -137,7 +138,7 @@ public class SaveFileManager(
 
             // Save changes
             string updatedXml = AppDataHelper.SaveDocument.ToString();
-            await _fileService.EncryptAndSaveSaveFileAsync(CurrentFile, updatedXml, cancellationToken);
+            await _fileService.EncryptAndSaveSaveFileAsync(CurrentFile, updatedXml, cancellationToken).ConfigureAwait(false);
 
             // Update state
             AppDataHelper.MarkAsModified(false);
@@ -158,7 +159,7 @@ public class SaveFileManager(
         try
         {
             // Prompt the user to pick a file
-            StorageFile? file = await _filePickerService.PickFileAsync();
+            StorageFile? file = await _filePickerService.PickFileAsync().ConfigureAwait(false);
             if (file == null)
             {
                 _logger.LogInformation("File picking canceled by user");
@@ -166,7 +167,7 @@ public class SaveFileManager(
             }
 
             // Load the picked file
-            return await LoadSaveFileAsync(file, cancellationToken);
+            return await LoadSaveFileAsync(file, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

@@ -3,14 +3,14 @@ using Sheltered2SaveEditor.Features.Skills.ViewModels;
 
 namespace Sheltered2SaveEditor.Features.Skills.Views;
 
-public sealed partial class SelectorBarItemStrength : Page
+internal sealed partial class SelectorBarItemStrength : Page
 {
-    public StrengthSkillsViewModel ViewModel { get; }
+    internal StrengthSkillsViewModel ViewModel { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SelectorBarItemStrength"/> class.
     /// </summary>
-    public SelectorBarItemStrength()
+    internal SelectorBarItemStrength()
     {
         ViewModel = new StrengthSkillsViewModel();
         InitializeComponent();

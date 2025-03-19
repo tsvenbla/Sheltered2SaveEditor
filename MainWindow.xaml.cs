@@ -16,10 +16,10 @@ namespace Sheltered2SaveEditor;
 /// The main application window, responsible for hosting the navigation structure
 /// and routing between different pages of the application.
 /// </summary>
-public sealed partial class MainWindow : Window, IDisposable
+internal sealed partial class MainWindow : Window, IDisposable
 {
     // Public property to expose the ViewModel for x:Bind
-    public MainWindowViewModel ViewModel => _viewModel!;
+    internal MainWindowViewModel ViewModel => _viewModel!;
 
     private readonly IDialogService? _dialogService;
     private readonly ILogger<MainWindow>? _logger;
@@ -32,7 +32,7 @@ public sealed partial class MainWindow : Window, IDisposable
     /// Initializes a new instance of the <see cref="MainWindow"/> class.
     /// Sets up the navigation structure and event handlers.
     /// </summary>
-    public MainWindow()
+    internal MainWindow()
     {
         try
         {

@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
-using System;
-using System.Threading.Tasks;
 
 namespace Sheltered2SaveEditor;
 
@@ -13,7 +11,7 @@ namespace Sheltered2SaveEditor;
 public partial class App : Application
 {
     // Main window instance with initial configuration
-    public static MainWindow MainWindow { get; } = new()
+    internal static MainWindow MainWindow { get; } = new()
     {
         ExtendsContentIntoTitleBar = true,
     };
@@ -91,7 +89,7 @@ public partial class App : Application
             _ = await Task.Run(async () => await MainWindow.DispatcherQueue.EnqueueAsync(async () => await _dialogService.ShowErrorDialogAsync(
                         "An error occurred",
                         e.Exception.Message,
-                        includeGitHubOption: true)));
+                        includeGitHubOption: true).ConfigureAwait(false)).ConfigureAwait(false)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -113,7 +111,7 @@ public static class DispatcherQueueExtensions
         {
             try
             {
-                await function();
+                await function().ConfigureAwait(false);
                 taskCompletionSource.SetResult(true);
             }
             catch (Exception ex)

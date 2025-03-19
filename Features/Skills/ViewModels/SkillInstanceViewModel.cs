@@ -13,7 +13,7 @@ namespace Sheltered2SaveEditor.Features.Skills.ViewModels;
 /// <param name="skillDefinition">The skill definition.</param>
 /// <param name="skillTree">The skill tree this skill belongs to.</param>
 /// <param name="currentLevel">The current level of the skill.</param>
-public partial class SkillInstanceViewModel(SkillDefinition skillDefinition, string skillTree, int currentLevel) : ObservableObject
+internal partial class SkillInstanceViewModel(SkillDefinition skillDefinition, string skillTree, int currentLevel) : ObservableObject
 {
     private readonly SkillDefinition _skillDefinition = skillDefinition ?? throw new ArgumentNullException(nameof(skillDefinition));
     private int _currentLevel = Math.Clamp(currentLevel, 0, skillDefinition.MaxLevel);
@@ -21,32 +21,32 @@ public partial class SkillInstanceViewModel(SkillDefinition skillDefinition, str
     /// <summary>
     /// Gets the unique identifier for this skill.
     /// </summary>
-    public int SkillKey => _skillDefinition.SkillKey;
+    internal int SkillKey => _skillDefinition.SkillKey;
 
     /// <summary>
     /// Gets the name of the skill.
     /// </summary>
-    public string Name => _skillDefinition.Name;
+    internal string Name => _skillDefinition.Name;
 
     /// <summary>
     /// Gets the maximum level this skill can reach.
     /// </summary>
-    public int MaxLevel => _skillDefinition.MaxLevel;
+    internal int MaxLevel => _skillDefinition.MaxLevel;
 
     /// <summary>
     /// Gets the tier of this skill (1-3).
     /// </summary>
-    public int Tier => _skillDefinition.Tier;
+    internal int Tier => _skillDefinition.Tier;
 
     /// <summary>
     /// Gets the display order within its tier.
     /// </summary>
-    public int DisplayOrder => _skillDefinition.DisplayOrder;
+    internal int DisplayOrder => _skillDefinition.DisplayOrder;
 
     /// <summary>
     /// Gets or sets the current level of this skill.
     /// </summary>
-    public int CurrentLevel
+    internal int CurrentLevel
     {
         get => _currentLevel;
         set => SetProperty(ref _currentLevel, Math.Clamp(value, 0, MaxLevel));
@@ -55,7 +55,7 @@ public partial class SkillInstanceViewModel(SkillDefinition skillDefinition, str
     /// <summary>
     /// Gets the path to the image for this skill.
     /// </summary>
-    public string ImageSource => $"ms-appx:///Assets/Skills/Skill{_skillTree}{Name.Replace(" ", string.Empty)}.png";
+    internal string ImageSource => $"ms-appx:///Assets/Skills/Skill{_skillTree}{Name.Replace(" ", string.Empty)}.png";
 
     private readonly string _skillTree = skillTree ?? throw new ArgumentNullException(nameof(skillTree));
 }

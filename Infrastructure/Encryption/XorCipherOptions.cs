@@ -39,5 +39,5 @@ public sealed record XorCipherOptions
     /// Default is false. When enabled, performs additional validation after file operations.
     /// This may impact performance but provides additional reliability.
     /// </remarks>
-    public bool VerifyOperations { get; init; } = false;
+    public bool VerifyOperations { get; init; } = true;
 }

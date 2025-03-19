@@ -12,7 +12,7 @@ namespace Sheltered2SaveEditor.Features.SaveFiles.ViewModels;
 /// <summary>
 /// ViewModel for the Home page responsible for loading and managing save files.
 /// </summary>
-public partial class HomePageViewModel : ObservableObject, IDisposable
+internal partial class HomePageViewModel : ObservableObject, IDisposable
 {
     #region Fields
     private readonly ISaveFileManager _saveFileManager;
@@ -50,7 +50,7 @@ public partial class HomePageViewModel : ObservableObject, IDisposable
             bool shouldProceed = await _dialogService.ShowConfirmationDialogAsync(
                 "Unsaved Changes",
                 "You have unsaved changes. Are you sure you want to load a new file?",
-                "Yes", "No");
+                "Yes", "No").ConfigureAwait(false);
 
             if (!shouldProceed)
             {
@@ -63,7 +63,7 @@ public partial class HomePageViewModel : ObservableObject, IDisposable
 
         try
         {
-            bool result = await _saveFileManager.PickAndLoadSaveFileAsync();
+            bool result = await _saveFileManager.PickAndLoadSaveFileAsync().ConfigureAwait(false);
             if (!result)
             {
                 Feedback = "Failed to load save file. It may be invalid or corrupted.";
@@ -93,7 +93,7 @@ public partial class HomePageViewModel : ObservableObject, IDisposable
         if (!_saveFileManager.IsFileLoaded)
         {
             _ = await _dialogService.ShowErrorDialogAsync(
-                "Save Error", "No file is currently loaded.");
+                "Save Error", "No file is currently loaded.").ConfigureAwait(false);
             return;
         }
 
@@ -102,7 +102,7 @@ public partial class HomePageViewModel : ObservableObject, IDisposable
 
         try
         {
-            bool success = await _saveFileManager.SaveChangesAsync();
+            bool success = await _saveFileManager.SaveChangesAsync().ConfigureAwait(false);
             if (success)
             {
                 Feedback = $"Changes saved successfully to {_saveFileManager.CurrentFile?.Name}";
@@ -111,14 +111,14 @@ public partial class HomePageViewModel : ObservableObject, IDisposable
             {
                 Feedback = "Failed to save changes.";
                 _ = await _dialogService.ShowErrorDialogAsync(
-                    "Save Error", "Failed to save changes to the file.");
+                    "Save Error", "Failed to save changes to the file.").ConfigureAwait(false);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving file");
             _ = await _dialogService.ShowErrorDialogAsync(
-                "Save Error", $"Failed to save changes: {ex.Message}");
+                "Save Error", $"Failed to save changes: {ex.Message}").ConfigureAwait(false);
             Feedback = $"Error saving file: {ex.Message}";
         }
         finally
@@ -132,7 +132,7 @@ public partial class HomePageViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="HomePageViewModel"/> class.
     /// </summary>
-    public HomePageViewModel(
+    internal HomePageViewModel(
         ISaveFileManager saveFileManager,
         IDialogService dialogService,
         ILogger<HomePageViewModel> logger)
@@ -204,7 +204,7 @@ public partial class HomePageViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Gets a value indicating whether a save file has been loaded.
     /// </summary>
-    public bool IsFileLoaded => _saveFileManager.IsFileLoaded;
+    internal bool IsFileLoaded => _saveFileManager.IsFileLoaded;
     #endregion
 
     #region IDisposable Implementation

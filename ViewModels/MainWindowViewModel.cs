@@ -13,7 +13,7 @@ namespace Sheltered2SaveEditor.ViewModels;
 /// <summary>
 /// ViewModel for the MainWindow, managing navigation states and UI-related properties.
 /// </summary>
-public partial class MainWindowViewModel : ObservableObject
+internal partial class MainWindowViewModel : ObservableObject
 {
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly INavigationService _navigationService;
@@ -31,7 +31,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the Home navigation item is enabled.
     /// </summary>
-    public bool IsHomeEnabled
+    internal bool IsHomeEnabled
     {
         get => _isHomeEnabled;
         set => SetProperty(ref _isHomeEnabled, value);
@@ -40,7 +40,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the Characters navigation item is enabled.
     /// </summary>
-    public bool IsCharactersEnabled
+    internal bool IsCharactersEnabled
     {
         get => _isCharactersEnabled;
         set => SetProperty(ref _isCharactersEnabled, value);
@@ -49,7 +49,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the Pets navigation item is enabled.
     /// </summary>
-    public bool IsPetsEnabled
+    internal bool IsPetsEnabled
     {
         get => _isPetsEnabled;
         set => SetProperty(ref _isPetsEnabled, value);
@@ -58,7 +58,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the Inventory navigation item is enabled.
     /// </summary>
-    public bool IsInventoryEnabled
+    internal bool IsInventoryEnabled
     {
         get => _isInventoryEnabled;
         set => SetProperty(ref _isInventoryEnabled, value);
@@ -67,7 +67,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the Crafting navigation item is enabled.
     /// </summary>
-    public bool IsCraftingEnabled
+    internal bool IsCraftingEnabled
     {
         get => _isCraftingEnabled;
         set => SetProperty(ref _isCraftingEnabled, value);
@@ -76,7 +76,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the Factions navigation item is enabled.
     /// </summary>
-    public bool IsFactionsEnabled
+    internal bool IsFactionsEnabled
     {
         get => _isFactionsEnabled;
         set => SetProperty(ref _isFactionsEnabled, value);
@@ -85,7 +85,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets or sets a value indicating whether the back navigation is enabled.
     /// </summary>
-    public bool IsNavigateBackEnabled
+    internal bool IsNavigateBackEnabled
     {
         get => _isNavigateBackEnabled;
         set => SetProperty(ref _isNavigateBackEnabled, value);
@@ -94,7 +94,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Gets a dictionary of navigation tags for use in the UI.
     /// </summary>
-    public ReadOnlyDictionary<string, string> NavigationTags { get; }
+    internal ReadOnlyDictionary<string, string> NavigationTags { get; }
 
     /// <summary>
     /// Gets a command to navigate to a specific page by its key.
@@ -139,7 +139,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <param name="logger">The logger used to log view model operations.</param>
     /// <param name="navigationService">The service used for navigation between pages.</param>
     /// <param name="pageRegistry">The registry of page navigation keys and types.</param>
-    public MainWindowViewModel(
+    internal MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         INavigationService navigationService,
         IPageNavigationRegistry pageRegistry)
@@ -171,7 +171,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// Updates the enabled state of navigation items based on whether a save file is loaded.
     /// </summary>
     /// <param name="saveFileLoaded">A value indicating whether a save file is loaded.</param>
-    public void UpdateNavigationState(bool saveFileLoaded)
+    internal void UpdateNavigationState(bool saveFileLoaded)
     {
         _logger.LogInformation("Updating navigation state. Save file loaded: {SaveFileLoaded}", saveFileLoaded);
 
@@ -190,5 +190,5 @@ public partial class MainWindowViewModel : ObservableObject
     /// Updates the back navigation state.
     /// </summary>
     /// <param name="canGoBack">A value indicating whether navigation can go back.</param>
-    public void UpdateBackNavigationState(bool canGoBack) => IsNavigateBackEnabled = canGoBack;
+    internal void UpdateBackNavigationState(bool canGoBack) => IsNavigateBackEnabled = canGoBack;
 }

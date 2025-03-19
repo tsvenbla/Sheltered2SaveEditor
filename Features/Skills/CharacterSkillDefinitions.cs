@@ -7,12 +7,12 @@ namespace Sheltered2SaveEditor.Features.Skills;
 /// <summary>
 /// Provides all immutable skill definitions (lookup tables) and lookup helpers.
 /// </summary>
-public static class CharacterSkillDefinitions
+internal static class CharacterSkillDefinitions
 {
     /// <summary>
     /// Gets an immutable array of strength skill definitions.
     /// </summary>
-    public static ImmutableArray<SkillDefinition> StrengthSkillDefinitions { get; } =
+    internal static ImmutableArray<SkillDefinition> StrengthSkillDefinitions { get; } =
         ImmutableArray.Create(
             new SkillDefinition(0, 2, 3, "Kick", 3, "An attack which targets either arms or legs, dealing 200% base damage. Has a 50% chance of breaking the targeted limb."),
             new SkillDefinition(4, 2, 1, "Headbutt", 3, "An attack which targets the head. 100% chance to daze the target and deals 200% base damage."),
@@ -33,7 +33,7 @@ public static class CharacterSkillDefinitions
     /// <summary>
     /// Gets an immutable array of dexterity skill definitions.
     /// </summary>
-    public static ImmutableArray<SkillDefinition> DexteritySkillDefinitions { get; } =
+    internal static ImmutableArray<SkillDefinition> DexteritySkillDefinitions { get; } =
         ImmutableArray.Create(
             new SkillDefinition(100, 2, 1, "Aimed Gunshot", 3, "Can make a gunshot with 15% increased accuracy."),
             new SkillDefinition(102, 1, 1, "Spray Gunshot", 3, "Can shoot a gun at random multiple targets until the clip is empty. Accuracy reduced by 30%."),
@@ -52,7 +52,7 @@ public static class CharacterSkillDefinitions
     /// <summary>
     /// Gets an immutable array of intelligence skill definitions.
     /// </summary>
-    public static ImmutableArray<SkillDefinition> IntelligenceSkillDefinitions { get; } =
+    internal static ImmutableArray<SkillDefinition> IntelligenceSkillDefinitions { get; } =
         ImmutableArray.Create(
             new SkillDefinition(200, 1, 2, "Focused", 3, "Increase accuracy of all melee attacks by 10%."),
             new SkillDefinition(201, 2, 2, "Advanced CPR Training", 1, "Increases the chance of successfully reviving a character using CPR from 50% to 75%."),
@@ -76,7 +76,7 @@ public static class CharacterSkillDefinitions
     /// <summary>
     /// Gets an immutable array of charisma skill definitions.
     /// </summary>
-    public static ImmutableArray<SkillDefinition> CharismaSkillDefinitions { get; } =
+    internal static ImmutableArray<SkillDefinition> CharismaSkillDefinitions { get; } =
         ImmutableArray.Create(
             new SkillDefinition(300, 3, 2, "Rallying", 3, "Provides a passive +1 strength and +1 fortitude boost to other party members."),
             new SkillDefinition(301, 2, 2, "Marching Songs", 3, "Increases the travel speed of the party by 5%, when travelling on foot."),
@@ -96,7 +96,7 @@ public static class CharacterSkillDefinitions
     /// <summary>
     /// Gets an immutable array of perception skill definitions.
     /// </summary>
-    public static ImmutableArray<SkillDefinition> PerceptionSkillDefinitions { get; } =
+    internal static ImmutableArray<SkillDefinition> PerceptionSkillDefinitions { get; } =
         ImmutableArray.Create(
             new SkillDefinition(402, 2, 1, "Taunt", 1, "Causes the target of the taunt to miss their next turn, but on their following turn they will target this character (or the character standing in front of them if they're in the back row), and have +1 strength."),
             new SkillDefinition(403, 3, 1, "Therapist", 1, "Can attempt to cure a character's mental trait with a 50% chance of success. Target needs to be resting in a bed."),
@@ -120,7 +120,7 @@ public static class CharacterSkillDefinitions
     /// <summary>
     /// Gets an immutable array of fortitude skill definitions.
     /// </summary>
-    public static ImmutableArray<SkillDefinition> FortitudeSkillDefinitions { get; } =
+    internal static ImmutableArray<SkillDefinition> FortitudeSkillDefinitions { get; } =
         ImmutableArray.Create(
             new SkillDefinition(500, 1, 2, "Pain Resistance Training", 3, "Reduce the effects of broken limbs by 25%."),
             new SkillDefinition(501, 2, 2, "Hardened Skin", 3, "Reduce the amount of damage taken from attacks by 10%."),
@@ -150,7 +150,7 @@ public static class CharacterSkillDefinitions
     /// <remarks>
     /// Each <see cref="SkillTreeDefinition"/> groups a specific skill tree type with its associated immutable collection of <see cref="SkillDefinition"/> items.
     /// </remarks>
-    public static ImmutableArray<SkillTreeDefinition> AllSkillTrees { get; } =
+    internal static ImmutableArray<SkillTreeDefinition> AllSkillTrees { get; } =
         ImmutableArray.Create(
             new SkillTreeDefinition(SkillTreeType.Strength, StrengthSkillDefinitions),
             new SkillTreeDefinition(SkillTreeType.Dexterity, DexteritySkillDefinitions),
@@ -166,7 +166,7 @@ public static class CharacterSkillDefinitions
     /// <remarks>
     /// The dictionary is built from <see cref="AllSkillTrees"/> and maps each skill tree type to its immutable array of <see cref="SkillDefinition"/> items.
     /// </remarks>
-    public static ImmutableDictionary<SkillTreeType, ImmutableArray<SkillDefinition>> SkillTreeDictionary { get; } =
+    internal static ImmutableDictionary<SkillTreeType, ImmutableArray<SkillDefinition>> SkillTreeDictionary { get; } =
         AllSkillTrees.ToImmutableDictionary(tree => tree.Type, tree => tree.Skills);
 
     /// <summary>
@@ -174,7 +174,7 @@ public static class CharacterSkillDefinitions
     /// </summary>
     /// <param name="skillKey">The unique identifier of the skill.</param>
     /// <returns>The skill definition if found; otherwise, null.</returns>
-    public static SkillDefinition? GetStrengthSkillDefinitionByKey(int skillKey)
+    internal static SkillDefinition? GetStrengthSkillDefinitionByKey(int skillKey)
     {
         foreach (SkillDefinition definition in StrengthSkillDefinitions)
         {
@@ -189,7 +189,7 @@ public static class CharacterSkillDefinitions
     /// </summary>
     /// <param name="skillKey">The unique identifier of the skill.</param>
     /// <returns>The skill definition if found; otherwise, null.</returns>
-    public static SkillDefinition? GetDexteritySkillDefinitionByKey(int skillKey)
+    internal static SkillDefinition? GetDexteritySkillDefinitionByKey(int skillKey)
     {
         foreach (SkillDefinition definition in DexteritySkillDefinitions)
         {
@@ -204,7 +204,7 @@ public static class CharacterSkillDefinitions
     /// </summary>
     /// <param name="skillKey">The unique identifier of the skill.</param>
     /// <returns>The skill definition if found; otherwise, null.</returns>
-    public static SkillDefinition? GetIntelligenceSkillDefinitionByKey(int skillKey)
+    internal static SkillDefinition? GetIntelligenceSkillDefinitionByKey(int skillKey)
     {
         foreach (SkillDefinition definition in IntelligenceSkillDefinitions)
         {
@@ -219,7 +219,7 @@ public static class CharacterSkillDefinitions
     /// </summary>
     /// <param name="skillKey">The unique identifier of the skill.</param>
     /// <returns>The skill definition if found; otherwise, null.</returns>
-    public static SkillDefinition? GetCharismaSkillDefinitionByKey(int skillKey)
+    internal static SkillDefinition? GetCharismaSkillDefinitionByKey(int skillKey)
     {
         foreach (SkillDefinition definition in CharismaSkillDefinitions)
         {
@@ -234,7 +234,7 @@ public static class CharacterSkillDefinitions
     /// </summary>
     /// <param name="skillKey">The unique identifier of the skill.</param>
     /// <returns>The skill definition if found; otherwise, null.</returns>
-    public static SkillDefinition? GetPerceptionSkillDefinitionByKey(int skillKey)
+    internal static SkillDefinition? GetPerceptionSkillDefinitionByKey(int skillKey)
     {
         foreach (SkillDefinition definition in PerceptionSkillDefinitions)
         {
@@ -249,7 +249,7 @@ public static class CharacterSkillDefinitions
     /// </summary>
     /// <param name="skillKey">The unique identifier of the skill.</param>
     /// <returns>The skill definition if found; otherwise, null.</returns>
-    public static SkillDefinition? GetFortitudeSkillDefinitionByKey(int skillKey)
+    internal static SkillDefinition? GetFortitudeSkillDefinitionByKey(int skillKey)
     {
         foreach (SkillDefinition definition in FortitudeSkillDefinitions)
         {
