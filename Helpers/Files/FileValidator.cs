@@ -1,12 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sheltered2SaveEditor.Helpers.Cipher;
-using System;
 using System.Buffers;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -373,7 +369,7 @@ internal sealed class FileValidator
     {
         try
         {
-            ValidationResultInfo result = await ValidateSaveFileWithDetailsAsync(file, NullValidationProgressMonitor.Instance, cancellationToken);
+            ValidationResultInfo result = await ValidateSaveFileWithDetailsAsync(file, NullValidationProgressMonitor.Instance, cancellationToken).ConfigureAwait(false);
 
             // If we're bypassing validation failures and we have an invalid format or structure,
             // return ValidWithWarnings instead of the actual error
@@ -934,7 +930,7 @@ internal sealed class FileValidator
                         "The file footer does not contain the expected XML closing tag");
                 }
 
-                await progressMonitor.ReportProgressAsync(100, "Validation completed successfully", cancellationToken);
+                await progressMonitor.ReportProgressAsync(100, "Validation completed successfully", cancellationToken).ConfigureAwait(false);
                 return ValidationResultInfo.Success(0);
             }
             catch (EndOfStreamException ex)
@@ -1012,7 +1008,7 @@ internal sealed class FileValidator
         {
             try
             {
-                return await operation();
+                return await operation().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -1033,7 +1029,7 @@ internal sealed class FileValidator
                     _logger?.LogDebug("Retry attempt {Attempt}/{MaxRetries}", attempt, maxRetries);
                 }
 
-                return await operation();
+                return await operation().ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {

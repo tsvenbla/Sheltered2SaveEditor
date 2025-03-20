@@ -10,7 +10,7 @@ namespace Sheltered2SaveEditor.Helpers.Files;
 internal sealed class FilePickerService : IFilePickerService
 {
     /// <inheritdoc/>
-    public async Task<StorageFile?> PickFileAsync()
+    public async Task<StorageFile?> PickFileAsync(CancellationToken cancellationToken = default)
     {
         FileOpenPicker openPicker = new()
         {
@@ -19,10 +19,24 @@ internal sealed class FilePickerService : IFilePickerService
         };
         openPicker.FileTypeFilter.Add(".dat");
 
-        // Use MainWindow's handle for the picker.
-        nint hWnd = WindowNative.GetWindowHandle(App.MainWindow);
-        InitializeWithWindow.Initialize(openPicker, hWnd);
+        try
+        {
+            // Use MainWindow's handle for the picker.
+            nint hWnd = WindowNative.GetWindowHandle(App.MainWindow);
+            InitializeWithWindow.Initialize(openPicker, hWnd);
 
-        return await openPicker.PickSingleFileAsync();
+            // Create a task that completes when the picker returns
+            Task<StorageFile> pickTask = openPicker.PickSingleFileAsync().AsTask(cancellationToken);
+            return await pickTask.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+        catch (Exception)
+        {
+            // If initialization fails or any other error occurs, return null instead of crashing
+            return null;
+        }
     }
 }
