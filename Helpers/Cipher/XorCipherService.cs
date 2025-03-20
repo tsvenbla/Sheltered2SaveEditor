@@ -27,8 +27,7 @@ internal sealed class XorCipherService : IXorCipherService
 
     /// <inheritdoc/>
     internal XorCipherOptions Options { get; }
-
-    XorCipherOptions IXorCipherService.Options => throw new NotImplementedException();
+    XorCipherOptions IXorCipherService.Options => Options;
 
     private readonly ILogger<XorCipherService>? _logger;
 
