@@ -9,20 +9,27 @@ namespace Sheltered2SaveEditor.Helpers.Files;
 /// </summary>
 internal sealed class FilePickerService : IFilePickerService
 {
+    private readonly FilePickerOptions _options = new();
+
     /// <inheritdoc/>
     public async Task<StorageFile?> PickFileAsync(CancellationToken cancellationToken = default)
     {
         FileOpenPicker openPicker = new()
         {
-            ViewMode = PickerViewMode.Thumbnail,
-            SuggestedStartLocation = PickerLocationId.ComputerFolder
+            ViewMode = _options.ViewMode,
+            SuggestedStartLocation = _options.StartLocation
         };
-        openPicker.FileTypeFilter.Add(".dat");
+
+        // Add file type filters
+        foreach (string extension in _options.FileTypeFilter)
+        {
+            openPicker.FileTypeFilter.Add(extension);
+        }
 
         try
         {
-            // Use MainWindow's handle for the picker.
-            nint hWnd = WindowNative.GetWindowHandle(App.MainWindow);
+            // Use the main window handle for the picker
+            nint hWnd = WindowHandleHelper.GetMainWindowHandle();
             InitializeWithWindow.Initialize(openPicker, hWnd);
 
             // Create a task that completes when the picker returns
