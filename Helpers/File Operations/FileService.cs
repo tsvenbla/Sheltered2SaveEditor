@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Infrastructure.Encryption;
-using System;
-using System.IO;
+using Sheltered2SaveEditor.Helpers.Cipher;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace Sheltered2SaveEditor.Infrastructure.Files;
@@ -31,7 +27,7 @@ internal sealed class FileService(ILogger<FileService> logger, IXorCipherService
 
         try
         {
-            byte[] decryptedData = await _cipherService.LoadAndXorAsync(file.Path, cancellationToken);
+            byte[] decryptedData = await _cipherService.LoadAndXorAsync(file.Path, cancellationToken).ConfigureAwait(false);
             string decryptedContent = Encoding.UTF8.GetString(decryptedData);
 
             _logger.LogInformation("Successfully loaded and decrypted save file: {FilePath}", file.Path);
@@ -55,7 +51,7 @@ internal sealed class FileService(ILogger<FileService> logger, IXorCipherService
         try
         {
             byte[] contentBytes = Encoding.UTF8.GetBytes(content);
-            await _cipherService.SaveAndXorAsync(file.Path, contentBytes, cancellationToken);
+            await _cipherService.SaveAndXorAsync(file.Path, contentBytes, cancellationToken).ConfigureAwait(false);
 
             _logger.LogInformation("Successfully encrypted and saved content to file: {FilePath}", file.Path);
         }

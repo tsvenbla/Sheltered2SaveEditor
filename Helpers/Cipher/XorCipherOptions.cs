@@ -1,4 +1,4 @@
-﻿namespace Sheltered2SaveEditor.Infrastructure.Encryption;
+﻿namespace Sheltered2SaveEditor.Helpers.Cipher;
 
 /// <summary>
 /// Defines the available options for XOR cipher operations.

@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace Sheltered2SaveEditor.Infrastructure.Encryption;
+﻿namespace Sheltered2SaveEditor.Helpers.Cipher;
 
 /// <summary>
 /// Provides methods for encrypting and decrypting data using an XOR cipher.

@@ -1,16 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Core.Constants;
 using Sheltered2SaveEditor.Features.Characters.ViewModels;
 using Sheltered2SaveEditor.Features.SaveFiles;
 using Sheltered2SaveEditor.Features.SaveFiles.ViewModels;
 using Sheltered2SaveEditor.Features.Skills.ViewModels;
-using Sheltered2SaveEditor.Infrastructure.Encryption;
+using Sheltered2SaveEditor.Helpers.Cipher;
 using Sheltered2SaveEditor.Infrastructure.Files;
 using Sheltered2SaveEditor.Infrastructure.Navigation;
 using Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
 using Sheltered2SaveEditor.ViewModels;
-using System;
 
 namespace Sheltered2SaveEditor;
 

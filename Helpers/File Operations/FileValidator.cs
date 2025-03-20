@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Infrastructure.Encryption;
+using Sheltered2SaveEditor.Helpers.Cipher;
 using System;
 using System.Buffers;
 using System.Diagnostics;

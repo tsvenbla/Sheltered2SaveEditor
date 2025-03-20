@@ -1,13 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
 using System.Buffers;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Sheltered2SaveEditor.Infrastructure.Encryption;
+namespace Sheltered2SaveEditor.Helpers.Cipher;
 
 /// <summary>
 /// Provides methods for encrypting and decrypting data using a configurable XOR key.
@@ -30,7 +26,9 @@ internal sealed class XorCipherService : IXorCipherService
     );
 
     /// <inheritdoc/>
-    public XorCipherOptions Options { get; }
+    internal XorCipherOptions Options { get; }
+
+    XorCipherOptions IXorCipherService.Options => throw new NotImplementedException();
 
     private readonly ILogger<XorCipherService>? _logger;
 
@@ -38,7 +36,7 @@ internal sealed class XorCipherService : IXorCipherService
     /// Initializes a new instance of the <see cref="XorCipherService"/> class with default options.
     /// </summary>
     /// <param name="logger">Optional logger for monitoring operations.</param>
-    public XorCipherService(ILogger<XorCipherService>? logger = null)
+    internal XorCipherService(ILogger<XorCipherService>? logger = null)
         : this(new XorCipherOptions(), logger)
     {
     }
@@ -49,7 +47,7 @@ internal sealed class XorCipherService : IXorCipherService
     /// <param name="options">The options for configuring the cipher service.</param>
     /// <param name="logger">Optional logger for monitoring operations.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="options"/> is <c>null</c>.</exception>
-    public XorCipherService(XorCipherOptions options, ILogger<XorCipherService>? logger = null)
+    internal XorCipherService(XorCipherOptions options, ILogger<XorCipherService>? logger = null)
     {
         Options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
@@ -80,7 +78,7 @@ internal sealed class XorCipherService : IXorCipherService
             if (Options.UseBufferedIO && fileInfo.Length > Options.BufferedIOThreshold)
             {
                 _logger?.LogDebug("Using buffered I/O for large file: {FilePath}", filePath);
-                return await LoadAndXorLargeFileAsync(filePath, cancellationToken);
+                return await LoadAndXorLargeFileAsync(filePath, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -159,7 +157,7 @@ internal sealed class XorCipherService : IXorCipherService
             }
 
             byte[] buffer = new byte[actualCount];
-            int bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, actualCount), cancellationToken);
+            int bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, actualCount), cancellationToken).ConfigureAwait(false);
 
             if (bytesRead < actualCount)
             {
@@ -218,7 +216,7 @@ internal sealed class XorCipherService : IXorCipherService
             if (Options.VerifyOperations)
             {
                 _logger?.LogDebug("Verifying saved file");
-                await VerifySavedFileAsync(filePath, content, cancellationToken);
+                await VerifySavedFileAsync(filePath, content, cancellationToken).ConfigureAwait(false);
                 _logger?.LogDebug("Verification successful");
             }
 
@@ -333,7 +331,7 @@ internal sealed class XorCipherService : IXorCipherService
         {
             // Read the file in chunks
             int chunkNumber = 0;
-            while ((bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, Options.BufferSize), cancellationToken)) > 0)
+            while ((bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, Options.BufferSize), cancellationToken).ConfigureAwait(false)) > 0)
             {
                 chunkNumber++;
                 _logger?.LogTrace("Processing chunk {Chunk}: {BytesRead} bytes", chunkNumber, bytesRead);
@@ -384,7 +382,7 @@ internal sealed class XorCipherService : IXorCipherService
         try
         {
             // Load the saved file
-            byte[] loadedContent = await LoadAndXorAsync(filePath, cancellationToken);
+            byte[] loadedContent = await LoadAndXorAsync(filePath, cancellationToken).ConfigureAwait(false);
 
             // Verify that content matches
             if (loadedContent.Length != originalContent.Length)
