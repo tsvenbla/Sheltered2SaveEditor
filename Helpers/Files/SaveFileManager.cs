@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sheltered2SaveEditor.Core.Models;
-using Sheltered2SaveEditor.Helpers;
-using Sheltered2SaveEditor.Infrastructure.Files;
 using System.Xml.Linq;
 using Windows.Storage;
 
-namespace Sheltered2SaveEditor.Features.SaveFiles;
+namespace Sheltered2SaveEditor.Helpers.Files;
 
 /// <summary>
 /// Manages loading, saving, and tracking changes to save files.

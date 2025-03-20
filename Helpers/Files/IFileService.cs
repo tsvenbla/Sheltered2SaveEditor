@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace Sheltered2SaveEditor.Infrastructure.Files;
+namespace Sheltered2SaveEditor.Helpers.Files;
 
 /// <summary>
 /// Defines methods for interacting with files.

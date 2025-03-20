@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
-using Windows.Storage;
+﻿using Windows.Storage;
 
-namespace Sheltered2SaveEditor.Infrastructure.Files;
+namespace Sheltered2SaveEditor.Helpers.Files;
 
 /// <summary>
 /// Defines a service for picking files from the file system.

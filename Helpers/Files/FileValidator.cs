@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace Sheltered2SaveEditor.Infrastructure.Files;
-
+namespace Sheltered2SaveEditor.Helpers.Files;
 /// <summary>
 /// Contains configuration settings for file validation.
 /// </summary>

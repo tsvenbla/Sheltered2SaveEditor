@@ -1,7 +1,7 @@
 ﻿using Sheltered2SaveEditor.Helpers;
 using Windows.Storage;
 
-namespace Sheltered2SaveEditor.Features.SaveFiles;
+namespace Sheltered2SaveEditor.Helpers.Files;
 
 /// <summary>
 /// Defines methods for managing save files.

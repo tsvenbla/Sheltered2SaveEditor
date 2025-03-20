@@ -2,7 +2,7 @@
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
-namespace Sheltered2SaveEditor.Infrastructure.Files;
+namespace Sheltered2SaveEditor.Helpers.Files;
 
 /// <summary>
 /// Implementation of the file picker service using the Windows Storage Pickers.

@@ -3,7 +3,7 @@ using Sheltered2SaveEditor.Helpers.Cipher;
 using System.Text;
 using Windows.Storage;
 
-namespace Sheltered2SaveEditor.Infrastructure.Files;
+namespace Sheltered2SaveEditor.Helpers.Files;
 
 /// <summary>
 /// Service for handling file operations.

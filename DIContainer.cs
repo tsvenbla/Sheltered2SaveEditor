@@ -5,6 +5,7 @@ using Sheltered2SaveEditor.Features.SaveFiles;
 using Sheltered2SaveEditor.Features.SaveFiles.ViewModels;
 using Sheltered2SaveEditor.Features.Skills.ViewModels;
 using Sheltered2SaveEditor.Helpers.Cipher;
+using Sheltered2SaveEditor.Helpers.Files;
 using Sheltered2SaveEditor.Infrastructure.Files;
 using Sheltered2SaveEditor.Infrastructure.Navigation;
 using Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
