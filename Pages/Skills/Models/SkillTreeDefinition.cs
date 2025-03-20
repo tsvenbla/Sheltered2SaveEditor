@@ -1,7 +1,6 @@
-﻿using Sheltered2SaveEditor.Core.Enums;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
-namespace Sheltered2SaveEditor.Core.Models;
+namespace Sheltered2SaveEditor.Pages.Skills.Models;
 
 /// <summary>
 /// Represents an immutable definition for a skill tree, including its type and the associated skills.

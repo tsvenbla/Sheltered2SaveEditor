@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Core;
 using Sheltered2SaveEditor.Core.Models;
+using Sheltered2SaveEditor.Helpers;
 using Sheltered2SaveEditor.Infrastructure.Files;
-using Sheltered2SaveEditor.Utils.Helpers;
 using System.Xml.Linq;
 using Windows.Storage;
 

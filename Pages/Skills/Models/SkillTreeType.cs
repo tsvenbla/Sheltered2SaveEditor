@@ -1,4 +1,4 @@
-﻿namespace Sheltered2SaveEditor.Core.Enums;
+﻿namespace Sheltered2SaveEditor.Pages.Skills.Models;
 
 /// <summary>
 /// Specifies the different types of skill trees available.

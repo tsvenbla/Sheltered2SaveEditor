@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Sheltered2SaveEditor.Core.Models;
+using Sheltered2SaveEditor.Pages.Skills.Models;
 using System;
 
 namespace Sheltered2SaveEditor.Features.Skills.ViewModels;

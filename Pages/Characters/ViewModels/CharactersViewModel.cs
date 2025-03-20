@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Data;
-using Sheltered2SaveEditor.Core;
 using Sheltered2SaveEditor.Core.Models;
+using Sheltered2SaveEditor.Helpers;
 using System.Collections.ObjectModel;
 
 namespace Sheltered2SaveEditor.Features.Characters.ViewModels;

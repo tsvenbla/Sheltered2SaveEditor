@@ -1,5 +1,4 @@
-﻿using Sheltered2SaveEditor.Core.Enums;
-using Sheltered2SaveEditor.Core.Models;
+﻿using Sheltered2SaveEditor.Pages.Skills.Models;
 using System.Collections.Immutable;
 
 namespace Sheltered2SaveEditor.Features.Skills;

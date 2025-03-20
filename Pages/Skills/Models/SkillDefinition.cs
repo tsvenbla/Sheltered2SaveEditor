@@ -1,4 +1,4 @@
-﻿namespace Sheltered2SaveEditor.Core.Models;
+﻿namespace Sheltered2SaveEditor.Pages.Skills.Models;
 
 /// <summary>
 /// Represents an immutable definition for a skill, including its unique key, tier, display order, name, maximum level, and tooltip.

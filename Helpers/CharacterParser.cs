@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Sheltered2SaveEditor.Utils.Helpers;
+namespace Sheltered2SaveEditor.Helpers;
 
 /// <summary>
 /// Provides methods for parsing character data from save files.
@@ -25,7 +25,6 @@ internal static class CharacterParser
             XDocument doc = XDocument.Parse(decryptedContent);
             XElement? familyMembers = doc.Root?.Element("FamilyMembers");
             if (familyMembers is not null)
-            {
                 foreach (XElement memberElement in familyMembers.Elements())
                 {
                     Character character = new()
@@ -88,7 +87,6 @@ internal static class CharacterParser
                         {
                             int size = int.TryParse(strengthSkillsElement.Attribute("size")?.Value, out int sSize) ? sSize : 0;
                             if (size > 0)
-                            {
                                 foreach (XElement skillElement in strengthSkillsElement.Elements())
                                 {
                                     XElement? skillKeyElement = skillElement.Element("skillKey");
@@ -108,17 +106,15 @@ internal static class CharacterParser
                                         }**/
                                     }
                                 }
-                            }
                         }
                     }
 
                     characters.Add(character);
                 }
-            }
         }
         catch (XmlException ex)
         {
-            throw new System.IO.InvalidDataException("Failed to parse the decrypted content into valid XML.", ex);
+            throw new InvalidDataException("Failed to parse the decrypted content into valid XML.", ex);
         }
 
         return characters.AsReadOnly();

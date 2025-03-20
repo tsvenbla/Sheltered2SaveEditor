@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Sheltered2SaveEditor.Pages.Skills.Models;
 
 namespace Sheltered2SaveEditor.Core.Models;
 

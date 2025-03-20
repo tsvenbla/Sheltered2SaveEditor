@@ -343,21 +343,19 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Features\Characters\Models\" />
-		<Folder Include="Features\Crafting\Views\" />
-		<Folder Include="Features\Donate\Views\" />
-		<Folder Include="Features\Donate\ViewModels\" />
-		<Folder Include="Features\Factions\Models\" />
-		<Folder Include="Features\Factions\Views\" />
-		<Folder Include="Features\Factions\ViewModels\" />
-		<Folder Include="Features\Inventory\Views\" />
-		<Folder Include="Features\Inventory\ViewModels\" />
-		<Folder Include="Features\Pets\Models\" />
-		<Folder Include="Features\Pets\Views\" />
-		<Folder Include="Features\Pets\ViewModels\" />
-		<Folder Include="Features\SaveFiles\Views\" />
-		<Folder Include="Features\Skills\Models\" />
-		<Folder Include="Features\Skills\Views\" />
+		<Folder Include="Pages\Crafting\Views\" />
+		<Folder Include="Pages\Donate\Views\" />
+		<Folder Include="Pages\Donate\ViewModels\" />
+		<Folder Include="Pages\Factions\Models\" />
+		<Folder Include="Pages\Factions\Views\" />
+		<Folder Include="Pages\Factions\ViewModels\" />
+		<Folder Include="Pages\Inventory\Views\" />
+		<Folder Include="Pages\Inventory\ViewModels\" />
+		<Folder Include="Pages\Pets\Models\" />
+		<Folder Include="Pages\Pets\Views\" />
+		<Folder Include="Pages\Pets\ViewModels\" />
+		<Folder Include="Pages\Home\Views\" />
+		<Folder Include="Pages\Skills\Views\" />
 	</ItemGroup>
 
 	<!--

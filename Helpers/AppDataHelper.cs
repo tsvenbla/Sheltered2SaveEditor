@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using Windows.Storage;
 
-namespace Sheltered2SaveEditor.Core;
+namespace Sheltered2SaveEditor.Helpers;
 
 /// <summary>
 /// Provides centralized access to application data and state.
@@ -64,9 +64,7 @@ internal static class AppDataHelper
 
                 // When loading a new file, mark it as modified to enable Save button
                 if (value != null)
-                {
                     MarkAsModified(true);
-                }
 
                 // Include the file in the event args
                 OnSaveFileLoaded(new SaveFileLoadedEventArgs { IsLoaded = value != null, SaveFile = value });
@@ -133,9 +131,7 @@ internal static class AppDataHelper
     {
         _characters.Clear();
         foreach (Character character in characters)
-        {
             _characters.Add(character);
-        }
         SelectedCharacter = _characters.Count > 0 ? _characters[0] : null;
         IsSaveFileModified = true;
         OnSaveFileModified(new SaveFileModifiedEventArgs { IsModified = true });

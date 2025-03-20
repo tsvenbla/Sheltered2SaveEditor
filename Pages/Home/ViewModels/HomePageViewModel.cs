@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
-using Sheltered2SaveEditor.Core;
+using Sheltered2SaveEditor.Helpers;
 using Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
 using Windows.Storage;
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Core.Constants;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

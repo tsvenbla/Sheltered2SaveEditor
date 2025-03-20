@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Core;
-using Sheltered2SaveEditor.Core.Constants;
+using Sheltered2SaveEditor.Helpers;
 using Sheltered2SaveEditor.Infrastructure.Navigation;
 using System;
 using System.Collections.Generic;
