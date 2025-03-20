@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Collections.Immutable;
-using System.Diagnostics;
+using System.Numerics;
 
 namespace Sheltered2SaveEditor.Helpers.Cipher;
 
@@ -27,16 +26,17 @@ internal sealed class XorCipherService : IXorCipherService
 
     /// <inheritdoc/>
     internal XorCipherOptions Options { get; }
-    XorCipherOptions IXorCipherService.Options => Options;
 
-    private readonly ILogger<XorCipherService>? _logger;
+    /// <summary>
+    /// Explicit interface implementation for Options property.
+    /// </summary>
+    XorCipherOptions IXorCipherService.Options => Options;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="XorCipherService"/> class with default options.
     /// </summary>
-    /// <param name="logger">Optional logger for monitoring operations.</param>
-    internal XorCipherService(ILogger<XorCipherService>? logger = null)
-        : this(new XorCipherOptions(), logger)
+    internal XorCipherService()
+        : this(new XorCipherOptions())
     {
     }
 
@@ -44,15 +44,8 @@ internal sealed class XorCipherService : IXorCipherService
     /// Initializes a new instance of the <see cref="XorCipherService"/> class with the specified options.
     /// </summary>
     /// <param name="options">The options for configuring the cipher service.</param>
-    /// <param name="logger">Optional logger for monitoring operations.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="options"/> is <c>null</c>.</exception>
-    internal XorCipherService(XorCipherOptions options, ILogger<XorCipherService>? logger = null)
-    {
-        Options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger;
-
-        _logger?.LogDebug("XorCipherService initialized with buffer size: {BufferSize}", Options.BufferSize);
-    }
+    internal XorCipherService(XorCipherOptions options) => Options = options ?? throw new ArgumentNullException(nameof(options));
 
     /// <inheritdoc/>
     public async Task<byte[]> LoadAndXorAsync(string filePath, CancellationToken cancellationToken = default)
@@ -62,21 +55,16 @@ internal sealed class XorCipherService : IXorCipherService
         // Check if file exists
         if (!File.Exists(filePath))
         {
-            _logger?.LogError("File not found: {FilePath}", filePath);
             throw new FileNotFoundException("The specified file does not exist.", filePath);
         }
 
         FileInfo fileInfo = new(filePath);
-        _logger?.LogDebug("Loading file: {FilePath}, Size: {FileSize} bytes", filePath, fileInfo.Length);
-
-        Stopwatch stopwatch = Stopwatch.StartNew();
 
         try
         {
             // Choose the appropriate method based on file size and options
             if (Options.UseBufferedIO && fileInfo.Length > Options.BufferedIOThreshold)
             {
-                _logger?.LogDebug("Using buffered I/O for large file: {FilePath}", filePath);
                 return await LoadAndXorLargeFileAsync(filePath, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -86,21 +74,13 @@ internal sealed class XorCipherService : IXorCipherService
                     .ConfigureAwait(false);
 
                 // Transform (decrypt) the file bytes using the XOR cipher
-                _logger?.LogDebug("Transforming file content, Size: {Size} bytes", fileBytes.Length);
                 byte[] result = Transform(fileBytes, cancellationToken);
-
-                stopwatch.Stop();
-                _logger?.LogInformation("File loaded and transformed successfully: {FilePath}, Time: {ElapsedMs}ms",
-                    filePath, stopwatch.ElapsedMilliseconds);
 
                 return result;
             }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            stopwatch.Stop();
-            _logger?.LogError(ex, "Error loading or transforming file: {FilePath}, Time: {ElapsedMs}ms",
-                filePath, stopwatch.ElapsedMilliseconds);
             throw;
         }
     }
@@ -112,27 +92,19 @@ internal sealed class XorCipherService : IXorCipherService
 
         if (offset < 0)
         {
-            _logger?.LogError("Invalid offset: {Offset}", offset);
             throw new ArgumentOutOfRangeException(nameof(offset), "Offset cannot be negative.");
         }
 
         if (count < -1)
         {
-            _logger?.LogError("Invalid count: {Count}", count);
             throw new ArgumentOutOfRangeException(nameof(count), "Count must be -1 or a non-negative value.");
         }
 
         // Check if file exists
         if (!File.Exists(filePath))
         {
-            _logger?.LogError("File not found: {FilePath}", filePath);
             throw new FileNotFoundException("The specified file does not exist.", filePath);
         }
-
-        _logger?.LogDebug("Loading file chunk: {FilePath}, Offset: {Offset}, Count: {Count}",
-            filePath, offset, count == -1 ? "to end" : count.ToString());
-
-        Stopwatch stopwatch = Stopwatch.StartNew();
 
         try
         {
@@ -152,7 +124,6 @@ internal sealed class XorCipherService : IXorCipherService
             if (count == -1 || count > fileStream.Length - offset)
             {
                 actualCount = (int)(fileStream.Length - offset);
-                _logger?.LogDebug("Adjusted count to {ActualCount} bytes based on file size", actualCount);
             }
 
             byte[] buffer = new byte[actualCount];
@@ -161,24 +132,14 @@ internal sealed class XorCipherService : IXorCipherService
             if (bytesRead < actualCount)
             {
                 // Resize buffer if we read fewer bytes than expected
-                _logger?.LogDebug("Resizing buffer: read {BytesRead} bytes instead of expected {ExpectedBytes}",
-                    bytesRead, actualCount);
                 Array.Resize(ref buffer, bytesRead);
             }
 
             byte[] result = Transform(buffer, cancellationToken);
-
-            stopwatch.Stop();
-            _logger?.LogInformation("File chunk loaded and transformed: {FilePath}, Size: {Size} bytes, Time: {ElapsedMs}ms",
-                filePath, result.Length, stopwatch.ElapsedMilliseconds);
-
             return result;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            stopwatch.Stop();
-            _logger?.LogError(ex, "Error loading or transforming file chunk: {FilePath}, Time: {ElapsedMs}ms",
-                filePath, stopwatch.ElapsedMilliseconds);
             throw;
         }
     }
@@ -189,68 +150,44 @@ internal sealed class XorCipherService : IXorCipherService
         ArgumentNullException.ThrowIfNull(filePath);
         ArgumentNullException.ThrowIfNull(content);
 
-        _logger?.LogDebug("Saving to file: {FilePath}, Content size: {Size} bytes", filePath, content.Length);
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
         try
         {
             // Ensure the directory exists
             string? directory = Path.GetDirectoryName(filePath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
-                _logger?.LogDebug("Creating directory: {Directory}", directory);
                 _ = Directory.CreateDirectory(directory);
             }
 
             // Transform (encrypt) the content
-            _logger?.LogDebug("Transforming content for writing");
             byte[] encryptedBytes = Transform(content, cancellationToken);
 
             // Asynchronously write the encrypted bytes to the file
-            _logger?.LogDebug("Writing {Bytes} bytes to file", encryptedBytes.Length);
             await File.WriteAllBytesAsync(filePath, encryptedBytes, cancellationToken)
                 .ConfigureAwait(false);
 
             // Verify the operation if enabled
             if (Options.VerifyOperations)
             {
-                _logger?.LogDebug("Verifying saved file");
                 await VerifySavedFileAsync(filePath, content, cancellationToken).ConfigureAwait(false);
-                _logger?.LogDebug("Verification successful");
             }
-
-            stopwatch.Stop();
-            _logger?.LogInformation("File saved successfully: {FilePath}, Time: {ElapsedMs}ms",
-                filePath, stopwatch.ElapsedMilliseconds);
         }
         catch (UnauthorizedAccessException ex)
         {
-            stopwatch.Stop();
-            _logger?.LogError(ex, "Access denied to file: {FilePath}, Time: {ElapsedMs}ms",
-                filePath, stopwatch.ElapsedMilliseconds);
             throw new UnauthorizedAccessException($"Access denied to file: {filePath}. Check file permissions.", ex);
         }
         catch (IOException ex)
         {
-            stopwatch.Stop();
-
             // Enhance with more specific error
-            if (ex.Message.Contains("being used by another process"))
+            if (ex.Message.Contains("being used by another process", StringComparison.Ordinal))
             {
-                _logger?.LogError(ex, "File in use by another process: {FilePath}, Time: {ElapsedMs}ms",
-                    filePath, stopwatch.ElapsedMilliseconds);
                 throw new IOException($"File '{filePath}' is in use by another process.", ex);
             }
 
-            _logger?.LogError(ex, "I/O error while saving file: {FilePath}, Time: {ElapsedMs}ms",
-                filePath, stopwatch.ElapsedMilliseconds);
             throw new IOException($"I/O error while saving file: {filePath}", ex);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            stopwatch.Stop();
-            _logger?.LogError(ex, "Unexpected error saving file: {FilePath}, Time: {ElapsedMs}ms",
-                filePath, stopwatch.ElapsedMilliseconds);
             throw;
         }
     }
@@ -260,42 +197,114 @@ internal sealed class XorCipherService : IXorCipherService
     {
         ArgumentNullException.ThrowIfNull(input);
 
-        _logger?.LogDebug("Transforming data: {Size} bytes", input.Length);
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
-        byte[] output = new byte[input.Length];
-
-        // Obtain a read-only span of the XOR key for efficient access
-        ReadOnlySpan<byte> keySpan = XorKey.AsSpan();
-
-        // For performance, check the cancellation token every 16KB
-        const int checkFrequency = 16 * 1024;
-
-        // Use SIMD-compatible loops when possible for better performance
-        int i = 0;
-
-        // Process the data in chunks
-        for (; i < input.Length; i++)
+        // For empty inputs, return an empty array
+        if (input.Length == 0)
         {
-            if (i % checkFrequency == 0 && cancellationToken.IsCancellationRequested)
-                cancellationToken.ThrowIfCancellationRequested();
-
-            output[i] = (byte)(input[i] ^ keySpan[i % keySpan.Length]);
+            return [];
         }
 
-        stopwatch.Stop();
-        _logger?.LogDebug("Data transformed successfully: {Size} bytes, Time: {ElapsedMs}ms",
-            input.Length, stopwatch.ElapsedMilliseconds);
+        // Determine if we should use pooling based on input size
+        bool usePooling = input.Length > 1024 * 1024; // 1MB threshold
+        byte[]? rentedOutput = null;
+        byte[] output;
 
-        return output;
+        try
+        {
+            // Either rent from pool or allocate new array
+            if (usePooling)
+            {
+                rentedOutput = ArrayPool<byte>.Shared.Rent(input.Length);
+                output = rentedOutput;
+            }
+            else
+            {
+                output = new byte[input.Length];
+            }
+
+            // Obtain a read-only span of the XOR key for efficient access
+            ReadOnlySpan<byte> keySpan = XorKey.AsSpan();
+
+            // For performance, check the cancellation token every 16KB
+            const int checkFrequency = 16 * 1024;
+
+            // Use SIMD if enabled and available
+            if (Options.UseSIMD && Vector.IsHardwareAccelerated && input.Length >= Vector<byte>.Count)
+            {
+                int vectorSize = Vector<byte>.Count;
+                int vectorizedLength = input.Length - input.Length % vectorSize;
+
+                // Process in vectorized chunks
+                for (int i = 0; i < vectorizedLength; i += vectorSize)
+                {
+                    if (i % checkFrequency == 0 && cancellationToken.IsCancellationRequested)
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                    // Create key vector (repeating pattern based on key length)
+                    byte[] keyChunk = new byte[vectorSize];
+                    for (int j = 0; j < vectorSize; j++)
+                    {
+                        keyChunk[j] = keySpan[(i + j) % keySpan.Length];
+                    }
+
+                    // Get vector from input
+                    Vector<byte> inputVector = new(input, i);
+                    Vector<byte> keyVector = new(keyChunk);
+
+                    // XOR the vectors
+                    Vector<byte> resultVector = Vector.Xor(inputVector, keyVector);
+
+                    // Store result
+                    resultVector.CopyTo(output, i);
+                }
+
+                // Process remaining elements
+                for (int i = vectorizedLength; i < input.Length; i++)
+                {
+                    if (i % checkFrequency == 0 && cancellationToken.IsCancellationRequested)
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                    output[i] = (byte)(input[i] ^ keySpan[i % keySpan.Length]);
+                }
+            }
+            else
+            {
+                // Standard non-SIMD processing
+                for (int i = 0; i < input.Length; i++)
+                {
+                    if (i % checkFrequency == 0 && cancellationToken.IsCancellationRequested)
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                    output[i] = (byte)(input[i] ^ keySpan[i % keySpan.Length]);
+                }
+            }
+
+            // If we used a rented buffer, copy to a right-sized array before returning
+            if (usePooling)
+            {
+                byte[] result = new byte[input.Length];
+                Array.Copy(output, result, input.Length);
+                return result;
+            }
+            else
+            {
+                return output;
+            }
+        }
+        finally
+        {
+            // Return the buffer to the pool if we rented one
+            if (rentedOutput != null)
+            {
+                ArrayPool<byte>.Shared.Return(rentedOutput);
+            }
+        }
     }
 
     /// <inheritdoc/>
     public IXorCipherService WithOptions(XorCipherOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
-        _logger?.LogDebug("Creating new XorCipherService with updated options");
-        return new XorCipherService(options, _logger);
+        return new XorCipherService(options);
     }
 
     /// <summary>
@@ -307,8 +316,6 @@ internal sealed class XorCipherService : IXorCipherService
     private async Task<byte[]> LoadAndXorLargeFileAsync(string filePath, CancellationToken cancellationToken)
     {
         FileInfo fileInfo = new(filePath);
-        _logger?.LogDebug("Processing large file: {FilePath}, Size: {FileSize} bytes", filePath, fileInfo.Length);
-        Stopwatch stopwatch = Stopwatch.StartNew();
 
         using FileStream fileStream = new(
             filePath,
@@ -329,12 +336,8 @@ internal sealed class XorCipherService : IXorCipherService
         try
         {
             // Read the file in chunks
-            int chunkNumber = 0;
             while ((bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, Options.BufferSize), cancellationToken).ConfigureAwait(false)) > 0)
             {
-                chunkNumber++;
-                _logger?.LogTrace("Processing chunk {Chunk}: {BytesRead} bytes", chunkNumber, bytesRead);
-
                 // Transform this chunk
                 for (int i = 0; i < bytesRead; i++)
                     result[totalBytesRead + i] = (byte)(buffer[i] ^ XorKey[(totalBytesRead + i) % XorKey.Length]);
@@ -354,14 +357,8 @@ internal sealed class XorCipherService : IXorCipherService
         // If we didn't read the entire file (should not happen under normal circumstances)
         if (totalBytesRead < fileInfo.Length)
         {
-            _logger?.LogWarning("Did not read entire file. Expected {ExpectedBytes}, got {ActualBytes}",
-                fileInfo.Length, totalBytesRead);
             Array.Resize(ref result, totalBytesRead);
         }
-
-        stopwatch.Stop();
-        _logger?.LogInformation("Large file processed successfully: {FilePath}, Size: {Size} bytes, Time: {ElapsedMs}ms",
-            filePath, totalBytesRead, stopwatch.ElapsedMilliseconds);
 
         return result;
     }
@@ -375,9 +372,6 @@ internal sealed class XorCipherService : IXorCipherService
     /// <returns>A task representing the verification operation.</returns>
     private async Task VerifySavedFileAsync(string filePath, byte[] originalContent, CancellationToken cancellationToken)
     {
-        _logger?.LogDebug("Starting verification of saved file: {FilePath}", filePath);
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
         try
         {
             // Load the saved file
@@ -386,8 +380,6 @@ internal sealed class XorCipherService : IXorCipherService
             // Verify that content matches
             if (loadedContent.Length != originalContent.Length)
             {
-                _logger?.LogError("Verification failed: File length mismatch. Expected {ExpectedLength}, got {ActualLength}",
-                    originalContent.Length, loadedContent.Length);
                 throw new InvalidDataException($"Verification failed: File length mismatch. Expected {originalContent.Length} bytes, got {loadedContent.Length} bytes.");
             }
 
@@ -395,7 +387,6 @@ internal sealed class XorCipherService : IXorCipherService
             {
                 if (loadedContent[i] != originalContent[i])
                 {
-                    _logger?.LogError("Verification failed: Content mismatch at position {Position}", i);
                     throw new InvalidDataException($"Verification failed: Content mismatch at position {i}.");
                 }
 
@@ -403,16 +394,9 @@ internal sealed class XorCipherService : IXorCipherService
                 if (i % 16384 == 0 && cancellationToken.IsCancellationRequested)
                     cancellationToken.ThrowIfCancellationRequested();
             }
-
-            stopwatch.Stop();
-            _logger?.LogInformation("File verification completed successfully: {FilePath}, Time: {ElapsedMs}ms",
-                filePath, stopwatch.ElapsedMilliseconds);
         }
         catch (Exception ex)
         {
-            stopwatch.Stop();
-            _logger?.LogError(ex, "File verification failed: {FilePath}, Time: {ElapsedMs}ms",
-                filePath, stopwatch.ElapsedMilliseconds);
             throw new InvalidOperationException("File verification failed after save operation.", ex);
         }
     }

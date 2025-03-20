@@ -6,7 +6,7 @@
 internal sealed record XorCipherOptions
 {
     /// <summary>
-    /// Gets or sets the buffer size for file operations.
+    /// Gets the buffer size for file operations.
     /// </summary>
     /// <remarks>
     /// Default is 64KB. Larger values may improve performance for large files,
@@ -15,7 +15,7 @@ internal sealed record XorCipherOptions
     internal int BufferSize { get; init; } = 64 * 1024;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to use buffered I/O for large files.
+    /// Gets a value indicating whether to use buffered I/O for large files.
     /// </summary>
     /// <remarks>
     /// Default is true. When enabled, larger files are processed in chunks
@@ -24,7 +24,7 @@ internal sealed record XorCipherOptions
     internal bool UseBufferedIO { get; init; } = true;
 
     /// <summary>
-    /// Gets or sets the file size threshold (in bytes) above which buffered I/O is used.
+    /// Gets the file size threshold (in bytes) above which buffered I/O is used.
     /// </summary>
     /// <remarks>
     /// Default is 4MB. Files larger than this will be processed in chunks if
@@ -33,11 +33,19 @@ internal sealed record XorCipherOptions
     internal long BufferedIOThreshold { get; init; } = 4 * 1024 * 1024;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to verify file operations after completion.
+    /// Gets a value indicating whether to verify file operations after completion.
     /// </summary>
     /// <remarks>
-    /// Default is false. When enabled, performs additional validation after file operations.
+    /// Default is true. When enabled, performs additional validation after file operations.
     /// This may impact performance but provides additional reliability.
     /// </remarks>
     internal bool VerifyOperations { get; init; } = true;
+
+    /// <summary>
+    /// Gets a value indicating whether to use SIMD operations when available.
+    /// </summary>
+    /// <remarks>
+    /// Default is true. When enabled, uses CPU vectorization for XOR operations.
+    /// </remarks>
+    internal bool UseSIMD { get; init; } = true;
 }
