@@ -101,7 +101,7 @@ public partial class App : Application
 }
 
 // Extension method to simplify DispatcherQueue usage with async/await
-public static class DispatcherQueueExtensions
+internal static class DispatcherQueueExtensions
 {
     public static Task<bool> EnqueueAsync(this Microsoft.UI.Dispatching.DispatcherQueue dispatcher, Func<Task> function)
     {

@@ -5,7 +5,7 @@ namespace Sheltered2SaveEditor.Core.Models;
 /// <summary>
 /// Represents a character in the game with their attributes and stats.
 /// </summary>
-internal partial class Character : ObservableObject
+internal sealed partial class Character : ObservableObject
 {
     private string _firstName = string.Empty;
     private string _lastName = string.Empty;

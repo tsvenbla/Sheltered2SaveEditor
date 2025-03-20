@@ -13,7 +13,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Navigation;
 /// <param name="logger">The logger used to log navigation operations.</param>
 /// <param name="pageRegistry">The registry containing page type mappings.</param>
 /// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
-internal class NavigationService(ILogger<NavigationService> logger, IPageNavigationRegistry pageRegistry) : INavigationService
+internal sealed class NavigationService(ILogger<NavigationService> logger, IPageNavigationRegistry pageRegistry) : INavigationService
 {
     private readonly ILogger<NavigationService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IPageNavigationRegistry _pageRegistry = pageRegistry ?? throw new ArgumentNullException(nameof(pageRegistry));

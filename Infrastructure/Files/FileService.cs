@@ -17,7 +17,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Files;
 /// </remarks>
 /// <param name="logger">The logger used to log file operations.</param>
 /// <param name="cipherService">The service used for encryption and decryption.</param>
-public class FileService(ILogger<FileService> logger, IXorCipherService cipherService) : IFileService
+internal sealed class FileService(ILogger<FileService> logger, IXorCipherService cipherService) : IFileService
 {
     private readonly ILogger<FileService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IXorCipherService _cipherService = cipherService ?? throw new ArgumentNullException(nameof(cipherService));

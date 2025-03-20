@@ -6,7 +6,7 @@ namespace Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
 /// <summary>
 /// Defines a service that handles showing modal dialogs to the user.
 /// </summary>
-public interface IDialogService
+internal interface IDialogService
 {
     /// <summary>
     /// Shows an error dialog to the user.

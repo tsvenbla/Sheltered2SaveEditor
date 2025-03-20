@@ -10,4 +10,4 @@ namespace Sheltered2SaveEditor.Core.Models;
 /// <param name="Skills">
 /// An <see cref="ImmutableArray{T}"/> of <see cref="SkillDefinition"/> items representing the skills in this tree.
 /// </param>
-internal record SkillTreeDefinition(SkillTreeType Type, ImmutableArray<SkillDefinition> Skills);
+internal sealed record SkillTreeDefinition(SkillTreeType Type, ImmutableArray<SkillDefinition> Skills);

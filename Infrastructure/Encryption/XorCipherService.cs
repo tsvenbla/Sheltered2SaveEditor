@@ -16,7 +16,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Encryption;
 /// This XOR cipher is used only for obfuscation and is not suitable for secure encryption.
 /// The same key is used for both encryption and decryption.
 /// </remarks>
-public sealed class XorCipherService : IXorCipherService
+internal sealed class XorCipherService : IXorCipherService
 {
     /// <summary>
     /// The key used to XOR the Sheltered 2 game save files.

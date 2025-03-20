@@ -3,11 +3,6 @@ using Sheltered2SaveEditor.Core;
 using Sheltered2SaveEditor.Core.Models;
 using Sheltered2SaveEditor.Infrastructure.Files;
 using Sheltered2SaveEditor.Utils.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Windows.Storage;
 
@@ -23,7 +18,7 @@ namespace Sheltered2SaveEditor.Features.SaveFiles;
 /// <param name="filePickerService">The file picker service.</param>
 /// <param name="fileValidator">The file validator.</param>
 /// <param name="logger">The logger.</param>
-internal class SaveFileManager(
+internal sealed class SaveFileManager(
     IFileService fileService,
     IFilePickerService filePickerService,
     FileValidator fileValidator,
@@ -88,7 +83,7 @@ internal class SaveFileManager(
             AppDataHelper.SaveDocument = document;
 
             // Extract character data
-            Collection<Character> characters = CharacterParser.ParseCharacters(decryptedContent);
+            IReadOnlyList<Character> characters = CharacterParser.ParseCharacters(decryptedContent);
             AppDataHelper.UpdateCharacters(characters);
 
             // Update state

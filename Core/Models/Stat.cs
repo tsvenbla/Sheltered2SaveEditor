@@ -1,12 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
 
 namespace Sheltered2SaveEditor.Core.Models;
 
 /// <summary>
 /// Represents a character stat with its level and cap.
 /// </summary>
-internal partial class Stat : ObservableObject
+internal sealed partial class Stat : ObservableObject
 {
     private int _level;
 

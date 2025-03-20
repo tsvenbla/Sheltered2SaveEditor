@@ -7,7 +7,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Files;
 /// <summary>
 /// Defines methods for interacting with files.
 /// </summary>
-public interface IFileService
+internal interface IFileService
 {
     /// <summary>
     /// Loads and decrypts a save file.

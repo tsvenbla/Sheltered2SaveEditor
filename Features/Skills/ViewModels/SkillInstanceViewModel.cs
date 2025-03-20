@@ -13,7 +13,7 @@ namespace Sheltered2SaveEditor.Features.Skills.ViewModels;
 /// <param name="skillDefinition">The skill definition.</param>
 /// <param name="skillTree">The skill tree this skill belongs to.</param>
 /// <param name="currentLevel">The current level of the skill.</param>
-internal partial class SkillInstanceViewModel(SkillDefinition skillDefinition, string skillTree, int currentLevel) : ObservableObject
+internal sealed partial class SkillInstanceViewModel(SkillDefinition skillDefinition, string skillTree, int currentLevel) : ObservableObject
 {
     private readonly SkillDefinition _skillDefinition = skillDefinition ?? throw new ArgumentNullException(nameof(skillDefinition));
     private int _currentLevel = Math.Clamp(currentLevel, 0, skillDefinition.MaxLevel);

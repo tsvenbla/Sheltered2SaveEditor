@@ -1,10 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using Microsoft.UI.Dispatching;
 using Sheltered2SaveEditor.Core;
 using Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
-using System;
-using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace Sheltered2SaveEditor.Features.SaveFiles.ViewModels;
@@ -12,12 +11,13 @@ namespace Sheltered2SaveEditor.Features.SaveFiles.ViewModels;
 /// <summary>
 /// ViewModel for the Home page responsible for loading and managing save files.
 /// </summary>
-internal partial class HomePageViewModel : ObservableObject, IDisposable
+internal sealed partial class HomePageViewModel : ObservableObject, IDisposable
 {
     #region Fields
     private readonly ISaveFileManager _saveFileManager;
     private readonly IDialogService _dialogService;
     private readonly ILogger<HomePageViewModel> _logger;
+    private readonly CancellationTokenSource _cts = new();
     private bool _disposed;
     #endregion
 
@@ -50,7 +50,7 @@ internal partial class HomePageViewModel : ObservableObject, IDisposable
             bool shouldProceed = await _dialogService.ShowConfirmationDialogAsync(
                 "Unsaved Changes",
                 "You have unsaved changes. Are you sure you want to load a new file?",
-                "Yes", "No").ConfigureAwait(false);
+                "Yes", "No").ConfigureAwait(true);
 
             if (!shouldProceed)
             {
@@ -63,7 +63,7 @@ internal partial class HomePageViewModel : ObservableObject, IDisposable
 
         try
         {
-            bool result = await _saveFileManager.PickAndLoadSaveFileAsync().ConfigureAwait(false);
+            bool result = await _saveFileManager.PickAndLoadSaveFileAsync(_cts.Token).ConfigureAwait(true);
             if (!result)
             {
                 Feedback = "Failed to load save file. It may be invalid or corrupted.";
@@ -73,6 +73,10 @@ internal partial class HomePageViewModel : ObservableObject, IDisposable
                 SelectedFile = _saveFileManager.CurrentFile;
                 Feedback = $"Selected file name: {SelectedFile?.Name}\nDecrypted successfully.";
             }
+        }
+        catch (OperationCanceledException)
+        {
+            Feedback = "File loading operation was canceled.";
         }
         catch (Exception ex)
         {
@@ -93,7 +97,7 @@ internal partial class HomePageViewModel : ObservableObject, IDisposable
         if (!_saveFileManager.IsFileLoaded)
         {
             _ = await _dialogService.ShowErrorDialogAsync(
-                "Save Error", "No file is currently loaded.").ConfigureAwait(false);
+                "Save Error", "No file is currently loaded.").ConfigureAwait(true);
             return;
         }
 
@@ -102,28 +106,57 @@ internal partial class HomePageViewModel : ObservableObject, IDisposable
 
         try
         {
-            bool success = await _saveFileManager.SaveChangesAsync().ConfigureAwait(false);
-            if (success)
+            // Get the dispatcher queue for UI updates
+            DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
+            // Perform the save operation
+            bool success = await _saveFileManager.SaveChangesAsync(createBackup: true, _cts.Token).ConfigureAwait(false);
+
+            // Update UI on UI thread
+            _ = await dispatcherQueue.EnqueueAsync(async () =>
             {
-                Feedback = $"Changes saved successfully to {_saveFileManager.CurrentFile?.Name}";
-            }
-            else
-            {
-                Feedback = "Failed to save changes.";
-                _ = await _dialogService.ShowErrorDialogAsync(
-                    "Save Error", "Failed to save changes to the file.").ConfigureAwait(false);
-            }
+                if (success)
+                {
+                    Feedback = $"Changes saved successfully to {_saveFileManager.CurrentFile?.Name}";
+                }
+                else
+                {
+                    Feedback = "Failed to save changes.";
+                    _ = await _dialogService.ShowErrorDialogAsync(
+                        "Save Error", "Failed to save changes to the file.").ConfigureAwait(true);
+                }
+                IsLoading = false;
+            }).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            Feedback = "Save operation was canceled.";
+            IsLoading = false;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving file");
-            _ = await _dialogService.ShowErrorDialogAsync(
-                "Save Error", $"Failed to save changes: {ex.Message}").ConfigureAwait(false);
-            Feedback = $"Error saving file: {ex.Message}";
-        }
-        finally
-        {
-            IsLoading = false;
+
+            try
+            {
+                // Update UI on UI thread
+                DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                _ = await dispatcherQueue.EnqueueAsync(async () =>
+                {
+                    Feedback = $"Error saving file: {ex.Message}";
+                    IsLoading = false;
+
+                    _ = await _dialogService.ShowErrorDialogAsync(
+                        "Save Error", $"Failed to save changes: {ex.Message}").ConfigureAwait(true);
+                }).ConfigureAwait(false);
+            }
+            catch (Exception dispatcherEx)
+            {
+                // Last resort fallback if dispatcher fails
+                _logger.LogError(dispatcherEx, "Failed to show error dialog via dispatcher");
+                Feedback = $"Error saving file: {ex.Message}";
+                IsLoading = false;
+            }
         }
     }
     #endregion
@@ -132,7 +165,10 @@ internal partial class HomePageViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="HomePageViewModel"/> class.
     /// </summary>
-    internal HomePageViewModel(
+    /// <param name="saveFileManager">The save file manager.</param>
+    /// <param name="dialogService">The dialog service.</param>
+    /// <param name="logger">The logger.</param>
+    public HomePageViewModel(
         ISaveFileManager saveFileManager,
         IDialogService dialogService,
         ILogger<HomePageViewModel> logger)
@@ -213,14 +249,15 @@ internal partial class HomePageViewModel : ObservableObject, IDisposable
     /// </summary>
     public void Dispose()
     {
-        Dispose(true);
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 
     /// <summary>
     /// Releases managed and unmanaged resources.
     /// </summary>
-    protected virtual void Dispose(bool disposing)
+    /// <param name="disposing">Whether to dispose managed resources.</param>
+    private void Dispose(bool disposing)
     {
         if (_disposed) return;
 
@@ -229,6 +266,17 @@ internal partial class HomePageViewModel : ObservableObject, IDisposable
             // Unsubscribe from events
             AppDataHelper.SaveFileLoaded -= OnSaveFileLoaded;
             AppDataHelper.SaveFileModified -= OnSaveFileModified;
+
+            // Cancel any pending operations
+            try
+            {
+                _cts.Cancel();
+                _cts.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error disposing cancellation token source");
+            }
         }
 
         _disposed = true;

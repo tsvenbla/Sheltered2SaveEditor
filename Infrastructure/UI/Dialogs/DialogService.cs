@@ -14,7 +14,7 @@ namespace Sheltered2SaveEditor.Infrastructure.UI.Dialogs;
 /// Initializes a new instance of the <see cref="DialogService"/> class.
 /// </remarks>
 /// <param name="logger">The logger used to log dialog operations.</param>
-public class DialogService(ILogger<DialogService> logger) : IDialogService
+internal class DialogService(ILogger<DialogService> logger) : IDialogService
 {
     private readonly ILogger<DialogService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private XamlRoot? _xamlRoot;

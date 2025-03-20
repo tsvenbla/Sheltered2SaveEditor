@@ -6,11 +6,11 @@
 /// </summary>
 internal static class NavigationKeys
 {
-    public const string Home = "Home";
-    public const string Characters = "Characters";
-    public const string Pets = "Pets";
-    public const string Inventory = "Inventory";
-    public const string Crafting = "Crafting";
-    public const string Factions = "Factions";
-    public const string Donate = "Donate";
+    internal const string Home = "Home";
+    internal const string Characters = "Characters";
+    internal const string Pets = "Pets";
+    internal const string Inventory = "Inventory";
+    internal const string Crafting = "Crafting";
+    internal const string Factions = "Factions";
+    internal const string Donate = "Donate";
 }

@@ -294,7 +294,7 @@ public sealed class NullValidationProgressMonitor : IValidationProgressMonitor
 /// <summary>
 /// Provides methods to validate game save files.
 /// </summary>
-public sealed class FileValidator
+internal sealed class FileValidator
 {
     private readonly IXorCipherService _cipherService;
     private readonly FileValidationOptions _options;
@@ -310,7 +310,7 @@ public sealed class FileValidator
     /// <param name="cipherService">The service used for encryption and decryption.</param>
     /// <param name="logger">Optional logger for diagnostic information.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="cipherService"/> is <c>null</c>.</exception>
-    public FileValidator(IXorCipherService cipherService, ILogger? logger = null)
+    internal FileValidator(IXorCipherService cipherService, ILogger? logger = null)
         : this(cipherService, new FileValidationOptions(), logger)
     {
     }

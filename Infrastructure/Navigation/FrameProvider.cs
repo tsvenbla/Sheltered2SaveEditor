@@ -10,7 +10,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Navigation;
 /// <summary>
 /// Defines the contract for a service that provides access to the application's navigation Frame.
 /// </summary>
-public interface IFrameProvider
+internal interface IFrameProvider
 {
     /// <summary>
     /// Gets a value indicating whether the Frame has been initialized.
@@ -77,7 +77,7 @@ public interface IFrameProvider
 /// Provides access to the application's navigation Frame when it becomes available.
 /// This resolves timing issues when the Frame isn't yet available during service registration.
 /// </summary>
-public partial class FrameProvider : IFrameProvider, IDisposable
+internal partial class FrameProvider : IFrameProvider, IDisposable
 {
     private readonly ILogger<FrameProvider> _logger;
     private Frame? _frame;

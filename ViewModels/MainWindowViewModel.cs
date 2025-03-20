@@ -13,7 +13,7 @@ namespace Sheltered2SaveEditor.ViewModels;
 /// <summary>
 /// ViewModel for the MainWindow, managing navigation states and UI-related properties.
 /// </summary>
-internal partial class MainWindowViewModel : ObservableObject
+internal sealed partial class MainWindowViewModel : ObservableObject
 {
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly INavigationService _navigationService;
@@ -139,7 +139,7 @@ internal partial class MainWindowViewModel : ObservableObject
     /// <param name="logger">The logger used to log view model operations.</param>
     /// <param name="navigationService">The service used for navigation between pages.</param>
     /// <param name="pageRegistry">The registry of page navigation keys and types.</param>
-    internal MainWindowViewModel(
+    public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         INavigationService navigationService,
         IPageNavigationRegistry pageRegistry)

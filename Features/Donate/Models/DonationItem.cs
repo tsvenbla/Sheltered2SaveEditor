@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace Sheltered2SaveEditor.Features.Donate.Models;
+﻿namespace Sheltered2SaveEditor.Features.Donate.Models;
 
 /// <summary>
 /// Represents a donation item with its associated properties.
 /// </summary>
-internal class DonationItem
+internal sealed class DonationItem
 {
     internal string? ItemTitle { get; set; }
     internal string? ItemImagePath { get; set; }

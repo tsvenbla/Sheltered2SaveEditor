@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
 
 namespace Sheltered2SaveEditor.Core.Models;
 
@@ -11,7 +10,7 @@ namespace Sheltered2SaveEditor.Core.Models;
 /// </remarks>
 /// <param name="definition">The skill definition.</param>
 /// <param name="level">The initial level of the skill.</param>
-internal partial class SkillInstance(SkillDefinition definition, int level = 0) : ObservableObject
+internal sealed partial class SkillInstance(SkillDefinition definition, int level = 0) : ObservableObject
 {
     private readonly SkillDefinition _definition = definition ?? throw new ArgumentNullException(nameof(definition));
     private int _level = Math.Clamp(level, 0, definition.MaxLevel);

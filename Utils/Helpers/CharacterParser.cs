@@ -16,9 +16,9 @@ internal static class CharacterParser
     /// </summary>
     /// <param name="decryptedContent">The decrypted XML content of the save file.</param>
     /// <returns>A collection of Character objects parsed from the content.</returns>
-    internal static Collection<Character> ParseCharacters(string decryptedContent)
+    internal static IReadOnlyList<Character> ParseCharacters(string decryptedContent)
     {
-        Collection<Character> characters = [];
+        List<Character> characters = [];
 
         try
         {
@@ -121,6 +121,6 @@ internal static class CharacterParser
             throw new System.IO.InvalidDataException("Failed to parse the decrypted content into valid XML.", ex);
         }
 
-        return characters;
+        return characters.AsReadOnly();
     }
 }

@@ -11,7 +11,7 @@ namespace Sheltered2SaveEditor.Features.Skills.ViewModels;
 /// <summary>
 /// ViewModel for managing the Strength skill tree.
 /// </summary>
-internal partial class StrengthSkillsViewModel : ObservableObject
+internal sealed partial class StrengthSkillsViewModel : ObservableObject
 {
     /// <summary>
     /// Gets the collection of skill instances for the Strength skill tree.

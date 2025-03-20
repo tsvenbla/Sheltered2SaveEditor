@@ -1,6 +1,4 @@
 using Sheltered2SaveEditor.Core.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
@@ -94,12 +92,13 @@ internal static class AppDataHelper
         }
     }
 
-    private static readonly List<Character> _characters = [];
+    private static readonly ObservableCollection<Character> _characters = [];
 
     /// <summary>
     /// Gets a read-only view of the characters parsed from the save file.
     /// </summary>
-    internal static ReadOnlyCollection<Character> Characters => _characters.AsReadOnly();
+    internal static ReadOnlyObservableCollection<Character> Characters { get; } =
+    new ReadOnlyObservableCollection<Character>(_characters);
 
     /// <summary>
     /// Gets or sets the decrypted XML document from the save file.
@@ -133,7 +132,10 @@ internal static class AppDataHelper
     internal static void UpdateCharacters(IEnumerable<Character> characters)
     {
         _characters.Clear();
-        _characters.AddRange(characters);
+        foreach (Character character in characters)
+        {
+            _characters.Add(character);
+        }
         SelectedCharacter = _characters.Count > 0 ? _characters[0] : null;
         IsSaveFileModified = true;
         OnSaveFileModified(new SaveFileModifiedEventArgs { IsModified = true });
@@ -161,18 +163,18 @@ internal static class AppDataHelper
 /// <summary>
 /// Contains event data for the <see cref="AppDataHelper.CharacterSelected"/> event.
 /// </summary>
-internal class CharacterSelectedEventArgs : EventArgs
+internal sealed class CharacterSelectedEventArgs : EventArgs
 {
     /// <summary>
     /// Gets or sets the selected character.
     /// </summary>
-    public Character? Character { get; set; }
+    internal Character? Character { get; set; }
 }
 
 /// <summary>
 /// Contains event data for the <see cref="AppDataHelper.SaveFileLoaded"/> event.
 /// </summary>
-internal class SaveFileLoadedEventArgs : EventArgs
+internal sealed class SaveFileLoadedEventArgs : EventArgs
 {
     /// <summary>
     /// Gets or sets a value indicating whether a file is loaded.
@@ -188,7 +190,7 @@ internal class SaveFileLoadedEventArgs : EventArgs
 /// <summary>
 /// Contains event data for the <see cref="AppDataHelper.SaveFileModified"/> event.
 /// </summary>
-internal class SaveFileModifiedEventArgs : EventArgs
+internal sealed class SaveFileModifiedEventArgs : EventArgs
 {
     /// <summary>
     /// Gets or sets a value indicating whether the save file is modified.

@@ -6,7 +6,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Encryption;
 /// <summary>
 /// Provides methods for encrypting and decrypting data using an XOR cipher.
 /// </summary>
-public interface IXorCipherService
+internal interface IXorCipherService
 {
     /// <summary>
     /// Gets the options currently configured for this cipher service.

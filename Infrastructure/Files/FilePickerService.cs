@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Windows.Storage;
+﻿using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
@@ -9,7 +7,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Files;
 /// <summary>
 /// Implementation of the file picker service using the Windows Storage Pickers.
 /// </summary>
-public class FilePickerService : IFilePickerService
+internal sealed class FilePickerService : IFilePickerService
 {
     /// <inheritdoc/>
     public async Task<StorageFile?> PickFileAsync()

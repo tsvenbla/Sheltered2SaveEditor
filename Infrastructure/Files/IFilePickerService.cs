@@ -6,7 +6,7 @@ namespace Sheltered2SaveEditor.Infrastructure.Files;
 /// <summary>
 /// Defines a service for picking files from the file system.
 /// </summary>
-public interface IFilePickerService
+internal interface IFilePickerService
 {
     /// <summary>
     /// Allows the user to pick a single file.

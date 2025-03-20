@@ -8,10 +8,7 @@ namespace Sheltered2SaveEditor.Pages.Skills;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class SelectorBarItemCharisma : Page
+internal sealed partial class SelectorBarItemCharisma : Page
 {
-    public SelectorBarItemCharisma()
-    {
-        this.InitializeComponent();
-    }
+    internal SelectorBarItemCharisma() => InitializeComponent();
 }
