@@ -1,22 +1,43 @@
 ﻿using Sheltered2SaveEditor.Helpers.Cipher;
+using System.Globalization;
 using System.Text;
 using Windows.Storage;
 
 namespace Sheltered2SaveEditor.Helpers.Files;
 
 /// <summary>
-/// Service for handling file operations.
+/// Provides methods for securely loading, saving, encrypting, and decrypting save files.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="FileService"/> class.
-/// </remarks>
-/// <param name="cipherService">The service used for encryption and decryption.</param>
-/// <param name="fileValidator">The service used for file validation.</param>
-/// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
-internal sealed class FileService(IXorCipherService cipherService, IFileValidator fileValidator) : IFileService
+internal sealed class FileService : IFileService
 {
-    private readonly IXorCipherService _cipherService = cipherService ?? throw new ArgumentNullException(nameof(cipherService));
-    private readonly IFileValidator _fileValidator = fileValidator ?? throw new ArgumentNullException(nameof(fileValidator));
+    private readonly IXorCipherService _cipherService;
+    private readonly IFileValidator _fileValidator;
+    private readonly FileServiceOptions _options;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileService"/> class with default options.
+    /// </summary>
+    /// <param name="cipherService">The service used for encryption and decryption.</param>
+    /// <param name="fileValidator">The service used for file validation.</param>
+    /// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
+    internal FileService(IXorCipherService cipherService, IFileValidator fileValidator)
+        : this(cipherService, fileValidator, new FileServiceOptions())
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileService"/> class with custom options.
+    /// </summary>
+    /// <param name="cipherService">The service used for encryption and decryption.</param>
+    /// <param name="fileValidator">The service used for file validation.</param>
+    /// <param name="options">Configuration options for the file service.</param>
+    /// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
+    internal FileService(IXorCipherService cipherService, IFileValidator fileValidator, FileServiceOptions options)
+    {
+        _cipherService = cipherService ?? throw new ArgumentNullException(nameof(cipherService));
+        _fileValidator = fileValidator ?? throw new ArgumentNullException(nameof(fileValidator));
+        _options = options ?? throw new ArgumentNullException(nameof(options));
+    }
 
     /// <inheritdoc/>
     public async Task<string> LoadAndDecryptSaveFileAsync(StorageFile file, CancellationToken cancellationToken = default)
@@ -50,10 +71,16 @@ internal sealed class FileService(IXorCipherService cipherService, IFileValidato
 
         try
         {
-            // Ensure the content has the root XML tag
-            if (!content.Contains("<root>", StringComparison.Ordinal) ||
-                !content.Contains("</root>", StringComparison.Ordinal))
-                throw new InvalidDataException("The content does not have the required XML structure.");
+            // Basic check to ensure at minimum we have an XML-like structure 
+            // without duplicating the detailed validation in FileValidator
+            string openTag = FileValidationOptions.DefaultExpectedHeader;
+            string closeTag = FileValidationOptions.DefaultExpectedFooter;
+
+            if (!content.Contains(openTag, StringComparison.Ordinal) ||
+                !content.Contains(closeTag, StringComparison.Ordinal))
+            {
+                throw new InvalidDataException($"The content does not have the required XML root tags.");
+            }
 
             byte[] contentBytes = Encoding.UTF8.GetBytes(content);
             await _cipherService.SaveAndXorAsync(file.Path, contentBytes, cancellationToken).ConfigureAwait(false);
@@ -76,7 +103,7 @@ internal sealed class FileService(IXorCipherService cipherService, IFileValidato
         try
         {
             StorageFolder folder = await file.GetParentAsync();
-            string backupFileName = $"{Path.GetFileNameWithoutExtension(file.Name)}_backup_{DateTime.Now:yyyyMMdd_HHmmss}{Path.GetExtension(file.Name)}";
+            string backupFileName = $"{Path.GetFileNameWithoutExtension(file.Name)}{_options.BackupFileSuffix}{DateTime.Now.ToString(_options.BackupDateFormat, CultureInfo.InvariantCulture)}{Path.GetExtension(file.Name)}";
 
             return await file.CopyAsync(folder, backupFileName, NameCollisionOption.GenerateUniqueName)
                 .AsTask(cancellationToken)

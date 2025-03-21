@@ -18,7 +18,10 @@ internal sealed record FilePickerOptions
     internal PickerLocationId StartLocation { get; init; } = PickerLocationId.ComputerFolder;
 
     /// <summary>
-    /// Gets the file types that the file picker should filter by.
+    /// Gets the file type(s) that the file picker should filter by.
     /// </summary>
+    /// <remarks>
+    /// At time of writing, Sheltered 2 uses only the .dat file type.
+    /// </remarks>
     internal IReadOnlyList<string> FileTypeFilter { get; init; } = [".dat"];
 }
