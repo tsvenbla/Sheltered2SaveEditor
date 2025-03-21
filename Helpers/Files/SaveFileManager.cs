@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Sheltered2SaveEditor.Core.Models;
+﻿using Sheltered2SaveEditor.Core.Models;
 using System.Xml.Linq;
 using Windows.Storage;
 
@@ -8,23 +7,27 @@ namespace Sheltered2SaveEditor.Helpers.Files;
 /// <summary>
 /// Manages loading, saving, and tracking changes to save files.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="SaveFileManager"/> class.
-/// </remarks>
-/// <param name="fileService">The file service.</param>
-/// <param name="filePickerService">The file picker service.</param>
-/// <param name="fileValidator">The file validator.</param>
-/// <param name="logger">The logger.</param>
-internal sealed class SaveFileManager(
-    IFileService fileService,
-    IFilePickerService filePickerService,
-    FileValidator fileValidator,
-    ILogger<SaveFileManager> logger) : ISaveFileManager
+internal sealed class SaveFileManager : ISaveFileManager
 {
-    private readonly IFileService _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
-    private readonly IFilePickerService _filePickerService = filePickerService ?? throw new ArgumentNullException(nameof(filePickerService));
-    private readonly FileValidator _fileValidator = fileValidator ?? throw new ArgumentNullException(nameof(fileValidator));
-    private readonly ILogger<SaveFileManager> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IFileService _fileService;
+    private readonly IFilePickerService _filePickerService;
+    private readonly IFileValidator _fileValidator;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SaveFileManager"/> class.
+    /// </summary>
+    /// <param name="fileService">The file service.</param>
+    /// <param name="filePickerService">The file picker service.</param>
+    /// <param name="fileValidator">The file validator.</param>
+    internal SaveFileManager(
+        IFileService fileService,
+        IFilePickerService filePickerService,
+        IFileValidator fileValidator)
+    {
+        _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
+        _filePickerService = filePickerService ?? throw new ArgumentNullException(nameof(filePickerService));
+        _fileValidator = fileValidator ?? throw new ArgumentNullException(nameof(fileValidator));
+    }
 
     /// <inheritdoc/>
     public bool IsFileLoaded => AppDataHelper.IsSaveFileLoaded;
@@ -52,15 +55,16 @@ internal sealed class SaveFileManager(
     /// <inheritdoc/>
     public async Task<bool> LoadSaveFileAsync(StorageFile file, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(file);
+
         try
         {
             // Clear previous data
             AppDataHelper.Clear();
 
             // Validate the file type
-            if (!FileValidator.IsValidDatFile(file))
+            if (!_fileValidator.HasValidExtension(file))
             {
-                _logger.LogWarning("Invalid file type: {FilePath}", file.Path);
                 return false;
             }
 
@@ -68,7 +72,6 @@ internal sealed class SaveFileManager(
             bool isValid = await _fileValidator.IsValidSaveFileAsync(file, cancellationToken).ConfigureAwait(false);
             if (!isValid)
             {
-                _logger.LogWarning("Invalid file format: {FilePath}", file.Path);
                 return false;
             }
 
@@ -90,12 +93,10 @@ internal sealed class SaveFileManager(
             // This allows saving to a different location even if no changes were made
             AppDataHelper.MarkAsModified(true);
 
-            _logger.LogInformation("Successfully loaded save file: {FilePath}", file.Path);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error loading save file: {FilePath}", file?.Path);
             AppDataHelper.Clear();
             return false;
         }
@@ -106,7 +107,6 @@ internal sealed class SaveFileManager(
     {
         if (CurrentFile == null || AppDataHelper.SaveDocument == null)
         {
-            _logger.LogWarning("Cannot save changes: No file is currently loaded");
             return false;
         }
 
@@ -115,17 +115,7 @@ internal sealed class SaveFileManager(
             // Create backup if requested
             if (createBackup)
             {
-                StorageFile? backupFile = await _fileService.CreateBackupAsync(CurrentFile, cancellationToken).ConfigureAwait(false);
-                if (backupFile == null)
-                {
-                    _logger.LogWarning("Failed to create backup of file: {FilePath}", CurrentFile.Path);
-                    // Continue without backup - the caller should decide whether to proceed
-                }
-                else
-                {
-                    _logger.LogInformation("Created backup of file: {OriginalPath} as {BackupPath}",
-                        CurrentFile.Path, backupFile.Path);
-                }
+                _ = await _fileService.CreateBackupAsync(CurrentFile, cancellationToken).ConfigureAwait(false);
             }
 
             // Save changes
@@ -135,12 +125,10 @@ internal sealed class SaveFileManager(
             // Update state
             AppDataHelper.MarkAsModified(false);
 
-            _logger.LogInformation("Successfully saved changes to file: {FilePath}", CurrentFile.Path);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error saving changes to file: {FilePath}", CurrentFile?.Path);
             return false;
         }
     }
@@ -151,19 +139,17 @@ internal sealed class SaveFileManager(
         try
         {
             // Prompt the user to pick a file
-            StorageFile? file = await _filePickerService.PickFileAsync().ConfigureAwait(false);
+            StorageFile? file = await _filePickerService.PickFileAsync(cancellationToken).ConfigureAwait(false);
             if (file == null)
             {
-                _logger.LogInformation("File picking canceled by user");
                 return false;
             }
 
             // Load the picked file
             return await LoadSaveFileAsync(file, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error picking and loading save file");
             return false;
         }
     }

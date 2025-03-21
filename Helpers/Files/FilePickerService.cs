@@ -9,7 +9,13 @@ namespace Sheltered2SaveEditor.Helpers.Files;
 /// </summary>
 internal sealed class FilePickerService : IFilePickerService
 {
-    private readonly FilePickerOptions _options = new();
+    private readonly FilePickerOptions _options;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FilePickerService"/> class.
+    /// </summary>
+    /// <param name="options">Options for configuring the file picker.</param>
+    internal FilePickerService(FilePickerOptions? options = null) => _options = options ?? new FilePickerOptions();
 
     /// <inheritdoc/>
     public async Task<StorageFile?> PickFileAsync(CancellationToken cancellationToken = default)
@@ -33,17 +39,16 @@ internal sealed class FilePickerService : IFilePickerService
             InitializeWithWindow.Initialize(openPicker, hWnd);
 
             // Create a task that completes when the picker returns
-            Task<StorageFile> pickTask = openPicker.PickSingleFileAsync().AsTask(cancellationToken);
-            return await pickTask.ConfigureAwait(false);
+            return await openPicker.PickSingleFileAsync().AsTask(cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
+            // User canceled the dialog
             return null;
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is System.Runtime.InteropServices.COMException or ArgumentException)
         {
-            // If initialization fails or any other error occurs, return null instead of crashing
-            return null;
+            throw new InvalidOperationException("File picker initialization failed.", ex);
         }
     }
 }

@@ -77,13 +77,12 @@ internal interface IFrameProvider
 /// Provides access to the application's navigation Frame when it becomes available.
 /// This resolves timing issues when the Frame isn't yet available during service registration.
 /// </summary>
-internal partial class FrameProvider : IFrameProvider, IDisposable
+internal partial class FrameProvider : IFrameProvider
 {
     private readonly ILogger<FrameProvider> _logger;
     private Frame? _frame;
     private readonly SemaphoreSlim _frameSemaphore = new(1, 1);
     private readonly TaskCompletionSource<Frame> _frameInitTcs = new();
-    private bool _disposed;
 
     /// <inheritdoc/>
     public bool IsInitialized => _frame != null;
@@ -252,38 +251,5 @@ internal partial class FrameProvider : IFrameProvider, IDisposable
     {
         _logger.LogDebug("Frame navigated to {PageType}", e.SourcePageType.Name);
         FrameNavigated?.Invoke(sender, e);
-    }
-
-    /// <summary>
-    /// Disposes resources used by the FrameProvider.
-    /// </summary>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// Releases the unmanaged resources used by the FrameProvider and optionally releases the managed resources.
-    /// </summary>
-    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            _frameSemaphore.Dispose();
-
-            if (_frame != null)
-            {
-                _frame.Navigated -= OnFrameNavigated;
-            }
-        }
-
-        _disposed = true;
     }
 }

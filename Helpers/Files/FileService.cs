@@ -12,31 +12,18 @@ internal sealed class FileService : IFileService
 {
     private readonly IXorCipherService _cipherService;
     private readonly IFileValidator _fileValidator;
-    private readonly FileServiceOptions _options;
+    private readonly FileServiceOptions _options = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FileService"/> class with default options.
+    /// Initializes a new instance of the <see cref="FileService"/> class.
     /// </summary>
     /// <param name="cipherService">The service used for encryption and decryption.</param>
     /// <param name="fileValidator">The service used for file validation.</param>
     /// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
     internal FileService(IXorCipherService cipherService, IFileValidator fileValidator)
-        : this(cipherService, fileValidator, new FileServiceOptions())
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FileService"/> class with custom options.
-    /// </summary>
-    /// <param name="cipherService">The service used for encryption and decryption.</param>
-    /// <param name="fileValidator">The service used for file validation.</param>
-    /// <param name="options">Configuration options for the file service.</param>
-    /// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
-    internal FileService(IXorCipherService cipherService, IFileValidator fileValidator, FileServiceOptions options)
     {
         _cipherService = cipherService ?? throw new ArgumentNullException(nameof(cipherService));
         _fileValidator = fileValidator ?? throw new ArgumentNullException(nameof(fileValidator));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     /// <inheritdoc/>
@@ -46,7 +33,9 @@ internal sealed class FileService : IFileService
 
         // Validate the file first
         if (!await _fileValidator.IsValidSaveFileAsync(file, cancellationToken).ConfigureAwait(false))
+        {
             throw new InvalidDataException($"The file '{file.Name}' is not a valid save file.");
+        }
 
         try
         {
@@ -72,7 +61,6 @@ internal sealed class FileService : IFileService
         try
         {
             // Basic check to ensure at minimum we have an XML-like structure 
-            // without duplicating the detailed validation in FileValidator
             string openTag = FileValidationOptions.DefaultExpectedHeader;
             string closeTag = FileValidationOptions.DefaultExpectedFooter;
 
