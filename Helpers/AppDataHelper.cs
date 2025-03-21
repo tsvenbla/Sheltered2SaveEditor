@@ -96,7 +96,7 @@ internal static class AppDataHelper
     /// Gets a read-only view of the characters parsed from the save file.
     /// </summary>
     internal static ReadOnlyObservableCollection<Character> Characters { get; } =
-    new ReadOnlyObservableCollection<Character>(_characters);
+        new ReadOnlyObservableCollection<Character>(_characters);
 
     /// <summary>
     /// Gets or sets the decrypted XML document from the save file.
@@ -132,6 +132,7 @@ internal static class AppDataHelper
         _characters.Clear();
         foreach (Character character in characters)
             _characters.Add(character);
+
         SelectedCharacter = _characters.Count > 0 ? _characters[0] : null;
         IsSaveFileModified = true;
         OnSaveFileModified(new SaveFileModifiedEventArgs { IsModified = true });

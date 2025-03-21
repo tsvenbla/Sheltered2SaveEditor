@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Sheltered2SaveEditor.Core.Models;
+namespace Sheltered2SaveEditor.Pages.Characters.Models;
 
 /// <summary>
 /// Represents a character in the game with their attributes and stats.

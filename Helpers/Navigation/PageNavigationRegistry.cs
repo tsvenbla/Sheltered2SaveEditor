@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
 namespace Sheltered2SaveEditor.Helpers.Navigation;
 
@@ -45,11 +44,15 @@ internal interface IPageNavigationRegistry
 /// Maintains a registry of navigation keys mapped to page types
 /// for type-safe navigation throughout the application.
 /// </summary>
-internal sealed class PageNavigationRegistry : IPageNavigationRegistry
+/// <remarks>
+/// Initializes a new instance of the <see cref="PageNavigationRegistry"/> class with custom defaults.
+/// </remarks>
+/// <param name="defaultPageType">The default page type to return when a key is not found.</param>
+/// <param name="defaultNavigationKey">The default navigation key to return when a page type is not found.</param>
+internal sealed class PageNavigationRegistry(Type defaultPageType, string defaultNavigationKey) : IPageNavigationRegistry
 {
-    private readonly ILogger<PageNavigationRegistry> _logger;
-    private readonly Type _defaultPageType;
-    private readonly string _defaultNavigationKey;
+    private readonly Type _defaultPageType = defaultPageType ?? throw new ArgumentNullException(nameof(defaultPageType));
+    private readonly string _defaultNavigationKey = defaultNavigationKey ?? throw new ArgumentNullException(nameof(defaultNavigationKey));
     private ImmutableDictionary<string, Type>? _pageTypesByKey;
     private ImmutableDictionary<Type, string>? _keysByPageType;
     private readonly Dictionary<string, Type> _registrations = [];
@@ -58,30 +61,9 @@ internal sealed class PageNavigationRegistry : IPageNavigationRegistry
     /// <summary>
     /// Initializes a new instance of the <see cref="PageNavigationRegistry"/> class.
     /// </summary>
-    /// <param name="logger">The logger used to log registration and lookup operations.</param>
-    public PageNavigationRegistry(ILogger<PageNavigationRegistry> logger)
-        : this(logger, typeof(Features.SaveFiles.Views.HomePage), NavigationKeys.Home)
+    public PageNavigationRegistry()
+        : this(typeof(Features.SaveFiles.Views.HomePage), NavigationKeys.Home)
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PageNavigationRegistry"/> class with custom defaults.
-    /// </summary>
-    /// <param name="logger">The logger used to log registration and lookup operations.</param>
-    /// <param name="defaultPageType">The default page type to return when a key is not found.</param>
-    /// <param name="defaultNavigationKey">The default navigation key to return when a page type is not found.</param>
-    /// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
-    public PageNavigationRegistry(
-        ILogger<PageNavigationRegistry> logger,
-        Type defaultPageType,
-        string defaultNavigationKey)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _defaultPageType = defaultPageType ?? throw new ArgumentNullException(nameof(defaultPageType));
-        _defaultNavigationKey = defaultNavigationKey ?? throw new ArgumentNullException(nameof(defaultNavigationKey));
-
-        _logger.LogInformation("PageNavigationRegistry initialized with default page type {DefaultPageType} and key {DefaultKey}",
-            _defaultPageType.Name, _defaultNavigationKey);
     }
 
     /// <inheritdoc/>
@@ -97,14 +79,7 @@ internal sealed class PageNavigationRegistry : IPageNavigationRegistry
             throw new ArgumentException($"Type {pageType.Name} is not a Page type", nameof(pageType));
         }
 
-        if (_registrations.TryGetValue(key, out Type? value))
-        {
-            _logger.LogWarning("Overwriting existing registration for key {Key} from {OldPageType} to {NewPageType}",
-                key, value.Name, pageType.Name);
-        }
-
         _registrations[key] = pageType;
-        _logger.LogDebug("Registered {PageType} with key {Key}", pageType.Name, key);
 
         return this;
     }
@@ -114,21 +89,12 @@ internal sealed class PageNavigationRegistry : IPageNavigationRegistry
     {
         if (string.IsNullOrEmpty(key))
         {
-            _logger.LogWarning("Attempt to get page type with null or empty key, returning default page {DefaultPage}",
-                _defaultPageType.Name);
             return _defaultPageType;
         }
 
         EnsureBuilt();
 
-        if (_pageTypesByKey!.TryGetValue(key, out Type? pageType))
-        {
-            return pageType;
-        }
-
-        _logger.LogWarning("Navigation key not found: {Key}, returning default page {DefaultPage}",
-            key, _defaultPageType.Name);
-        return _defaultPageType;
+        return _pageTypesByKey!.TryGetValue(key, out Type? pageType) ? pageType : _defaultPageType;
     }
 
     /// <inheritdoc/>
@@ -136,21 +102,12 @@ internal sealed class PageNavigationRegistry : IPageNavigationRegistry
     {
         if (pageType == null)
         {
-            _logger.LogWarning("Attempt to get navigation key with null page type, returning default key {DefaultKey}",
-                _defaultNavigationKey);
             return _defaultNavigationKey;
         }
 
         EnsureBuilt();
 
-        if (_keysByPageType!.TryGetValue(pageType, out string? key))
-        {
-            return key;
-        }
-
-        _logger.LogWarning("Page type not registered: {PageType}, returning default key {DefaultKey}",
-            pageType.Name, _defaultNavigationKey);
-        return _defaultNavigationKey;
+        return _keysByPageType!.TryGetValue(pageType, out string? key) ? key : _defaultNavigationKey;
     }
 
     /// <inheritdoc/>
@@ -158,7 +115,6 @@ internal sealed class PageNavigationRegistry : IPageNavigationRegistry
     {
         if (_isBuilt)
         {
-            _logger.LogWarning("PageNavigationRegistry already built, ignoring build request");
             return this;
         }
 
@@ -174,7 +130,6 @@ internal sealed class PageNavigationRegistry : IPageNavigationRegistry
         _keysByPageType = keysByType.ToImmutableDictionary();
 
         _isBuilt = true;
-        _logger.LogInformation("PageNavigationRegistry built with {Count} page registrations", _pageTypesByKey.Count);
 
         return this;
     }
@@ -195,19 +150,16 @@ internal sealed class PageNavigationRegistry : IPageNavigationRegistry
         _ = Register(NavigationKeys.Factions, typeof(Features.Factions.Views.FactionsPage));
         _ = Register(NavigationKeys.Donate, typeof(Features.Donate.Views.DonatePage));
 
-        _logger.LogInformation("Registered default pages");
         return this;
     }
 
     /// <summary>
     /// Ensures the registry has been built before use.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if the registry has not been built.</exception>
     private void EnsureBuilt()
     {
         if (!_isBuilt)
         {
-            _logger.LogWarning("PageNavigationRegistry not built before use, automatically building");
             _ = Build();
         }
     }

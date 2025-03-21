@@ -1,4 +1,5 @@
 ﻿using Sheltered2SaveEditor.Core.Models;
+using Sheltered2SaveEditor.Pages.Characters;
 using System.Xml.Linq;
 using Windows.Storage;
 

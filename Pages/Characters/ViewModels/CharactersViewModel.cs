@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Data;
-using Sheltered2SaveEditor.Core.Models;
 using Sheltered2SaveEditor.Helpers;
+using Sheltered2SaveEditor.Pages.Characters.Models;
 using System.Collections.ObjectModel;
 
-namespace Sheltered2SaveEditor.Features.Characters.ViewModels;
+namespace Sheltered2SaveEditor.Pages.Characters.ViewModels;
 
 /// <summary>
 /// ViewModel for managing and presenting the list of characters and related operations.

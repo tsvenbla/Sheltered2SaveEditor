@@ -1,10 +1,7 @@
-﻿using Sheltered2SaveEditor.Core.Models;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Xml;
+﻿using Sheltered2SaveEditor.Pages.Characters.Models;
 using System.Xml.Linq;
 
-namespace Sheltered2SaveEditor.Helpers;
+namespace Sheltered2SaveEditor.Pages.Characters;
 
 /// <summary>
 /// Provides methods for parsing character data from save files.
@@ -93,17 +90,19 @@ internal static class CharacterParser
                                     XElement? skillLevelElement = skillElement.Element("skillLevel");
                                     if (skillKeyElement is not null && skillLevelElement is not null)
                                     {
+                                        // Currently commented out in original code - keeping structure
+                                        /*
                                         int skillKey = int.TryParse(skillKeyElement.Value, out int sKey) ? sKey : 0;
                                         int skillLevel = int.TryParse(skillLevelElement.Value, out int sLevel) ? sLevel : 0;
 
                                         // Use the immutable lookup to get the definition.
-                                        /**
                                         SkillDefinition? skillDef = CharacterSkillDefinitions.GetStrengthSkillDefinitionByKey(skillKey);
                                         if (skillDef is not null)
                                         {
                                             // Create a mutable SkillInstance with the current level.
                                             character.StrengthSkills.Add(new SkillInstance(skillDef, skillLevel));
-                                        }**/
+                                        }
+                                        */
                                     }
                                 }
                         }
@@ -112,7 +111,7 @@ internal static class CharacterParser
                     characters.Add(character);
                 }
         }
-        catch (XmlException ex)
+        catch (System.Xml.XmlException ex)
         {
             throw new InvalidDataException("Failed to parse the decrypted content into valid XML.", ex);
         }
