@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
-using System;
 
-namespace Sheltered2SaveEditor.Infrastructure.Navigation;
+namespace Sheltered2SaveEditor.Helpers.Navigation;
 
 /// <summary>
 /// Service that manages navigation between pages using a Frame.

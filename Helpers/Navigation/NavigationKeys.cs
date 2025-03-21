@@ -1,4 +1,4 @@
-﻿namespace Sheltered2SaveEditor.Infrastructure.Navigation;
+﻿namespace Sheltered2SaveEditor.Helpers.Navigation;
 
 /// <summary>
 /// Provides constant string values for navigation destinations in the application.

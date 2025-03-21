@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Sheltered2SaveEditor.Infrastructure.Navigation;
+namespace Sheltered2SaveEditor.Helpers.Navigation;
 
 /// <summary>
 /// Defines the contract for a navigation registry that maps navigation keys to page types.

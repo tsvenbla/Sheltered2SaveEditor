@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Sheltered2SaveEditor.Infrastructure.Navigation;
+namespace Sheltered2SaveEditor.Helpers.Navigation;
 
 /// <summary>
 /// Defines the contract for a service that provides access to the application's navigation Frame.
@@ -77,7 +74,7 @@ internal interface IFrameProvider
 /// Provides access to the application's navigation Frame when it becomes available.
 /// This resolves timing issues when the Frame isn't yet available during service registration.
 /// </summary>
-internal partial class FrameProvider : IFrameProvider
+internal partial class FrameProvider : IFrameProvider, IDisposable
 {
     private readonly ILogger<FrameProvider> _logger;
     private Frame? _frame;
@@ -182,7 +179,7 @@ internal partial class FrameProvider : IFrameProvider
 
         try
         {
-            return await _frameInitTcs.Task.WaitAsync(linkedCts.Token);
+            return await _frameInitTcs.Task.WaitAsync(linkedCts.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
@@ -251,5 +248,10 @@ internal partial class FrameProvider : IFrameProvider
     {
         _logger.LogDebug("Frame navigated to {PageType}", e.SourcePageType.Name);
         FrameNavigated?.Invoke(sender, e);
+    }
+
+    public void Dispose()
+    {
+        throw new NotImplementedException();
     }
 }
